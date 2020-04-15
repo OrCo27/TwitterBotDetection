@@ -1,9 +1,8 @@
 # folders to ignore
-/data
-/output
+/data/**
+/output/**
 /.idea
 
 # files to keep
+!.gitkeep
 !.gitignore
-!data/.gitkeep
-!output/.gitkeep
