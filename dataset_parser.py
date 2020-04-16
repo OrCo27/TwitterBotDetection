@@ -33,12 +33,12 @@ class DatasetBuilder:
         # build final triples by users resolution
         if self.config_id == DatasetConfig.USER_STATE[0]:
             users_dict = self._build_users_dict(query_list)
-            final_bots, final_docs, final_labels = self._build_final_queries_docs_labels(users_dict,
+            final_bots, final_docs, final_labels = self._generate_final_dataset_user_groups(users_dict,
                                                                                          query_list,
                                                                                          doc_list)
         # build final triples by random state
         else:
-            final_bots, final_docs, final_labels = self._generate_final_docs_and_labels(query_list,
+            final_bots, final_docs, final_labels = self._generate_final_dataset_random(query_list,
                                                                                         doc_list)
 
         # build the vocabulary based on query-doc lists
@@ -113,7 +113,7 @@ class DatasetBuilder:
         return bot_tweet, doc_tweet, length_valid
 
     # build queries and docs pairs by user resolution
-    def _build_final_queries_docs_labels(self, users_dict, bot_lines, human_lines):
+    def _generate_final_dataset_user_groups(self, users_dict, bot_lines, human_lines):
         self.logger.write_log(f'Generating final dataset with appropriate candidates...')
 
         final_bots = []
@@ -172,7 +172,7 @@ class DatasetBuilder:
             self.addit_feat_len = self.overlap_feats.shape[1]
 
     # generate docs pairs from the whole bots source
-    def _generate_final_docs_and_labels(self, query_list, doc_list):
+    def _generate_final_dataset_random(self, query_list, doc_list):
         self.logger.write_log(f'Generating final dataset with appropriate candidates...')
 
         # create temporary labels for each list
