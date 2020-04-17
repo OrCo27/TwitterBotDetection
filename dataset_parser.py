@@ -124,13 +124,21 @@ class DatasetBuilder:
             items_count = len(users_dict[user])
             if items_count == 1:  # current user have only one tweet, pair to random human tweet
                 bot_tweet = users_dict[user][0]
-                doc_tweet = random.choice(human_lines)
+                human_choice = bool(random.getrandbits(1))  # random choice between bot or human source
+
+                if human_choice:
+                    doc_tweet = random.choice(human_lines)
+                    label = 0
+                else:
+                    doc_tweet = random.choice(bot_lines)
+                    label = 1
+
                 bot_tweet, doc_tweet, length_valid = self._perform_pre_processing(bot_tweet, doc_tweet)
 
                 if length_valid:
                     final_bots.append(bot_tweet)
                     final_docs.append(doc_tweet)
-                    final_labels.append(0)
+                    final_labels.append(label)
             else:  # user have more than one tweet, iterate them and random choose from bot or human source
                 list_items = list(range(1, items_count))
                 for i in range(items_count):
