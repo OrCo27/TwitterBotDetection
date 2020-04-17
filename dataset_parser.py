@@ -97,7 +97,7 @@ class DatasetBuilder:
             if curr_user is not None:
                 if curr_user not in users_dict:  # it's the first tweet of this user, add it
                     users_dict[curr_user] = [line]
-                else:  # this user already exists
+                elif line not in users_dict[curr_user]:  # append to exists user only if not exists
                     users_dict[curr_user].append(line)
 
         return users_dict
