@@ -33,14 +33,14 @@ class ModelCommon:
         nopunc = text.lower().strip()
 
         # remove prefixes and users tags
-        nopunc = re.sub('^RT @\s*(.+?)(:|\b)|@(.+?)\b', '', nopunc)
+        nopunc = re.sub('^RT @\s*(.+?)(:|\b)|@(.+?)\b', '', nopunc, flags=re.IGNORECASE)
 
         # remove enojies
         nopunc = nopunc.encode('ascii', 'ignore').decode('ascii')
 
         # remove URLs
-        nopunc = re.sub('((www\.[^\s]+)|(https?://[^\s]+)|(http?://[^\s]+))', '', nopunc)
-        nopunc = re.sub(r'http\S+', '', nopunc)
+        nopunc = re.sub('((www\.[^\s]+)|(https?://[^\s]+)|(http?://[^\s]+))', '', nopunc, flags=re.IGNORECASE)
+        nopunc = re.sub(r'http\S+', '', nopunc, flags=re.IGNORECASE)
 
         # remove all digits
         nopunc = re.sub('(\d+)', '', nopunc)
