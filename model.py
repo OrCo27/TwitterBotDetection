@@ -78,7 +78,7 @@ class RankingModel:
         hidden_layer = Dropout(self.dropout_rate)(hidden_layer)
 
         # Final softmax layer
-        softmax = Dense(1, activation='sigmoid')(hidden_layer)
+        softmax = Dense(1, activation='sigmoid', name='output')(hidden_layer)
 
         model = Model(inputs=[q_input, d_input, input_addn_feat],
                       outputs=softmax)
