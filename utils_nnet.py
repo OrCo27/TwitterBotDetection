@@ -1,3 +1,4 @@
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 import string
 import re
 import numpy as np
@@ -33,14 +34,14 @@ class ModelCommon:
         nopunc = text.lower().strip()
 
         # remove prefixes and users tags
-        nopunc = re.sub('^RT @\s*(.+?)(:|\b)|@(.+?)\b', '', nopunc, flags=re.IGNORECASE)
+        nopunc = re.sub('^rt ', '', nopunc)
 
         # remove enojies
         nopunc = nopunc.encode('ascii', 'ignore').decode('ascii')
 
         # remove URLs
-        nopunc = re.sub('((www\.[^\s]+)|(https?://[^\s]+)|(http?://[^\s]+))', '', nopunc, flags=re.IGNORECASE)
-        nopunc = re.sub(r'http\S+', '', nopunc, flags=re.IGNORECASE)
+        nopunc = re.sub('((www\.[^\s]+)|(https?://[^\s]+)|(http?://[^\s]+))', '', nopunc)
+        nopunc = re.sub(r'http\S+', '', nopunc)
 
         # remove all digits
         nopunc = re.sub('(\d+)', '', nopunc)
@@ -54,3 +55,9 @@ class ModelCommon:
         nopunc = ''.join(nopunc)
 
         return nopunc.split()
+
+    @staticmethod
+    def convert_text_to_sequences(tokenizer, text_list, max_text_len):
+        x_text = tokenizer.texts_to_sequences(text_list)
+        x_padded = pad_sequences(x_text, maxlen=max_text_len, padding='post', truncating='post')
+        return x_padded
