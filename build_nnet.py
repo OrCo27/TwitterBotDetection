@@ -1,3 +1,4 @@
+from utils_nnet import ModelCommon as utils
 from model import RankingModel
 from dataset_parser import DatasetBuilder, DatasetConfig
 from logger import Log
@@ -30,29 +31,45 @@ class ModelTrainer:
         self.test_split = test_split
         self.bots_file = bots_file
         self.human_file = human_file
+        self.x_bot_tweets = []
+        self.bot_tweets = []
+        self.bot_test_tweets = []
+        self.doc_test_tweets = []
+        self.labels_test = []
 
     def train_model(self):
         # load exists dataset or create a new one if not exists
         self._load_datset()
 
+        self.logger.write_log('Splitting datasets into train and test sets', title='training')
+
+        data_train, data_test = self._split_train_test_sets()
+        q_train, d_train, addn_feat_train, y_train = data_train
+        q_test, d_test, addn_feat_test, y_test = data_test
+
+        self.logger.write_log(f'trains samples: {len(q_train)}', title='training')
+        self.logger.write_log(f'test samples: {len(q_test)}', title='training')
+
         # extract some parameters that uses for our model
         vocabulary = self.dataset.tokenizer.index_word
         max_text_len = self.dataset.max_text_len
         addit_feat_len = self.dataset.addit_feat_len
+        tokenizer = self.dataset.tokenizer
 
-        self.logger.write_log('Splitting datasets into train and test sets', title='training')
+        # convert texts to sequences
+        self.logger.write_log('convert texts to sequences', title='training')
+        x_q_train = utils.convert_text_to_sequences(tokenizer, q_train, max_text_len)
+        x_d_train = utils.convert_text_to_sequences(tokenizer, d_train, max_text_len)
+        x_q_test = utils.convert_text_to_sequences(tokenizer, q_test, max_text_len)
+        x_d_test = utils.convert_text_to_sequences(tokenizer, d_test, max_text_len)
 
-        # make triples from query, doc, and overlap features
-        x = list(map(list, zip(self.dataset.query_list, self.dataset.doc_list, self.dataset.overlap_feats)))
-        y = self.dataset.labels_list
+        # prepare data for predicting
+        self.bot_tweets = self._get_unique_matches(q_train, y_train)
+        self.x_bot_tweets = utils.convert_text_to_sequences(tokenizer, self.bot_tweets, max_text_len)
 
-        # split all data into train, test sets
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=self.test_split)
-        q_train, d_train, addn_feat_train = list(map(list, zip(*x_train)))
-        q_test, d_test, addn_feat_test = list(map(list, zip(*x_test)))
-
-        self.logger.write_log(f'trains samples: {len(q_train)}', title='training')
-        self.logger.write_log(f'test samples: {len(q_test)}', title='training')
+        self.bot_test_tweets = q_test
+        self.doc_test_tweets = d_test
+        self.labels_test = y_test
 
         # create our model with embedding matrix
         self.model = self._create_model(vocabulary, max_text_len, addit_feat_len)
@@ -60,7 +77,7 @@ class ModelTrainer:
         self.logger.write_log(f'Start training process..', title='training')
 
         # start fitting model
-        history = self.model.fit([np.array(q_train), np.array(d_train), np.array(addn_feat_train)],
+        history = self.model.fit([np.array(x_q_train), np.array(x_d_train), np.array(addn_feat_train)],
                                  np.array(y_train),
                                  epochs=self.epochs,
                                  batch_size=self.batch_size,
@@ -71,10 +88,34 @@ class ModelTrainer:
         self.logger.write_log(f'Start evaluating our model on test set', 'evaluate')
 
         # evaluate the model with test-set
-        result = self.model.evaluate([np.array(q_test), np.array(d_test), np.array(addn_feat_test)], np.array(y_test),
+        result = self.model.evaluate([np.array(x_q_test), np.array(x_d_test), np.array(addn_feat_test)], np.array(y_test),
                                      verbose=0)
 
         self.logger.write_log(f'test loss={result[0]:.4f}, test accuracy={result[1]:.4f}', 'evaluate')
+
+    def _get_unique_matches(self, query_train, label_train):
+        lst = list(zip(query_train, label_train))
+        lst_matches = list(filter(lambda x: x[1] == 1, lst))
+        bot_matches, _ = list(map(list, zip(*lst_matches)))
+        unique_matches = self._remove_dups(bot_matches)
+        return unique_matches
+
+    def _remove_dups(self, query_list):
+        query_set = set(map(tuple, query_list))
+        unique_list = list(map(list, query_set))
+        return unique_list
+
+    def _split_train_test_sets(self):
+        # make triples from query, doc, and overlap features
+        x = list(map(list, zip(self.dataset.query_list, self.dataset.doc_list, self.dataset.overlap_feats)))
+        y = self.dataset.labels_list
+
+        # split all data into train, test sets
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=self.test_split)
+        q_train, d_train, addn_feat_train = list(map(list, zip(*x_train)))
+        q_test, d_test, addn_feat_test = list(map(list, zip(*x_test)))
+
+        return [q_train, d_train, addn_feat_train, y_train], [q_test, d_test, addn_feat_test, y_test]
 
     def _load_embeddings_file(self):
         embeddings_index = {}
@@ -117,10 +158,9 @@ class ModelTrainer:
         """
         early_stop = EarlyStopping(monitor='val_loss',
                                    min_delta=.01,
-                                   patience=5,
+                                   patience=3,
                                    verbose=1,
                                    mode='auto',
-                                   baseline=None,
                                    restore_best_weights=True)
 
         return [early_stop]
@@ -169,8 +209,12 @@ class ModelTrainer:
 
     def save_model(self, model_name):
         # saving the complete model including it's weights
-        full_path = os.path.join('output', model_name + f'_{self.dataset_config_name}.h5')
-        self.model.save(full_path)
+        full_path = os.path.join('output', model_name)
+        model_path = f'{full_path}_{self.dataset_config_name}.h5'
+        pickle_path = f'{full_path}_{self.dataset_config_name}.pickle'
+
+        self.model.save(model_path)
 
         # saving all variables for next uses
-        # TODO: when starting to implement predict-side, check which variables are needed for saving?
+        with open(pickle_path, 'wb') as f:
+            pickle.dump([self.x_bot_tweets, self.bot_tweets, self.dataset.tokenizer, self.dataset.max_text_len], f)
