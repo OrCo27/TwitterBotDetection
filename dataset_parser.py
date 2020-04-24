@@ -112,7 +112,8 @@ class DatasetBuilder:
 
         for user in users_dict:
             items_count = len(users_dict[user])
-            if items_count == 1:  # current user have only one tweet, pair to random human tweet
+            # current user have only one tweet, pair to random human tweet
+            if items_count == 1:
                 bot_tweet = users_dict[user][0]
                 doc_tweet = random.choice(human_lines)
 
@@ -127,10 +128,9 @@ class DatasetBuilder:
                 for i in range(items_count):
                     curr_tweet = users_dict[user][i]
 
-                    if i in list_items:  # remove current index, so it will not select again
+                    # remove current index, so it will not select again
+                    if i in list_items:
                         list_items.remove(i)
-
-                    #human_choice = bool(random.getrandbits(1))  # random choice between bot or human source
 
                     if len(list_items) == 0:  # select from human source
                         doc_tweet = random.choice(human_lines)
@@ -138,7 +138,8 @@ class DatasetBuilder:
                     else:  # select from bot user list
                         candidate_random_index = random.choice(list_items)
                         doc_tweet = users_dict[user][candidate_random_index]
-                        list_items.remove(candidate_random_index)  # remove selected index that it will not select again
+                        # remove selected index that it will not select again
+                        list_items.remove(candidate_random_index)
 
                         # if pairs are not equals, select from own list
                         if doc_tweet != curr_tweet:
