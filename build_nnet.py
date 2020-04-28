@@ -6,25 +6,23 @@ from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
 import os.path
 import numpy as np
-import time
 import os
 import pickle
 from os import path
-
+from embedding import Embedding
 
 class ModelTrainer:
     def __init__(self, logger=Log(print), embedding_file='data/wiki-news-300d-1M.vec',
                  bots_file='data/bots_tweets.txt', human_file='data/human_tweets.txt',
-                 validation_split=0.2, test_split=0.2, batch_size=50, epochs=25, embedding_dim=200,
+                 validation_split=0.2, test_split=0.2, batch_size=50, epochs=25,
                  additional_feats_enabled=True, dataset_config=DatasetConfig.USER_STATE):
 
         self.dataset = DatasetBuilder(logger, dataset_config)
         _,self.dataset_config_name = dataset_config
         self.logger = logger
+        self.embedding = Embedding(logger, embedding_file)
         self.model = None  # initialize later
         self.additional_feats_enabled = additional_feats_enabled
-        self.embedding_file = embedding_file
-        self.embedding_dim = embedding_dim
         self.batch_size = batch_size
         self.epochs = epochs
         self.validation_split = validation_split
@@ -97,13 +95,8 @@ class ModelTrainer:
         lst = list(zip(query_train, label_train))
         lst_matches = list(filter(lambda x: x[1] == 1, lst))
         bot_matches, _ = list(map(list, zip(*lst_matches)))
-        unique_matches = self._remove_dups(bot_matches)
+        unique_matches = utils.remove_duplicates(bot_matches)
         return unique_matches
-
-    def _remove_dups(self, query_list):
-        query_set = set(map(tuple, query_list))
-        unique_list = list(map(list, query_set))
-        return unique_list
 
     def _split_train_test_sets(self):
         # make triples from query, doc, and overlap features
@@ -116,40 +109,6 @@ class ModelTrainer:
         q_test, d_test, addn_feat_test = list(map(list, zip(*x_test)))
 
         return [q_train, d_train, addn_feat_train, y_train], [q_test, d_test, addn_feat_test, y_test]
-
-    def _load_embeddings_file(self):
-        embeddings_index = {}
-        self.logger.write_log(f'Loading embedding file: \'{self.embedding_file}\'')
-        start = time.time()
-        with open(self.embedding_file, 'r', encoding='utf-8') as f:
-            for line in f:
-                values = line.split()
-                word = values[0]
-                coefs = np.asarray(values[1:], dtype='float32')
-                embeddings_index[word] = coefs
-
-        self.logger.write_log(f'Loaded in {time.time() - start} seconds')
-        self.logger.write_log(f'Found {len(embeddings_index)} word vectors.')
-        return embeddings_index
-
-    def _create_embeddings_matrix(self, embeddings_index, vocabulary):
-        try:
-            self.logger.write_log(f'Creating embedding matrix, dim: {len(vocabulary) + 1} x {self.embedding_dim}')
-            embeddings_matrix = np.random.rand(len(vocabulary) + 1, self.embedding_dim)
-            words_not_found = 0
-
-        except Exception as e:
-            print(e)
-
-        for i, word in vocabulary.items():
-            embedding_vector = embeddings_index.get(word)
-            if embedding_vector is not None:
-                embeddings_matrix[i] = embedding_vector
-            else:
-                words_not_found += 1
-
-        self.logger.write_log(f'Number of words not in trained embedding: {words_not_found}')
-        return embeddings_matrix
 
     def _get_callbacks(self):
         """
@@ -165,27 +124,9 @@ class ModelTrainer:
 
         return [early_stop]
 
-    def _load_embedding_matrix(self, vocabulary):
-        embedding_index_file = os.path.splitext(self.embedding_file)[0] + '.pickle'
-        if path.exists(embedding_index_file):
-            self.logger.write_log('Trying to load embedding index from npy dump.')
-            with open(embedding_index_file, 'rb') as f:
-                embedding_index = pickle.load(f)
-        else:
-            self.logger.write_log('Load from dump failed, reading from embedding file.')
-            # load embedding vectors and create embedding matrix
-            embedding_index = self._load_embeddings_file()
-            with open(embedding_index_file, 'wb') as f:
-                pickle.dump(embedding_index, f)
-
-        # load embedding vectors and create embedding matrix
-        embedding_matrix = self._create_embeddings_matrix(embedding_index, vocabulary)
-
-        return embedding_matrix
-
     def _create_model(self, vocabulary, max_text_len, addit_feat_len):
         # load embedding matrix
-        embedding_matrix = self._load_embedding_matrix(vocabulary)
+        embedding_matrix = self.embedding.load_embedding_matrix(vocabulary)
 
         # create our model
         model = RankingModel(self.logger, max_text_len, addit_feat_len, embedding_matrix)
