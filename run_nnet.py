@@ -6,6 +6,7 @@ import pickle
 import csv
 import random
 
+
 class SinglePredictor:
     def __init__(self, model_name):
         self.model_name = model_name
@@ -15,6 +16,7 @@ class SinglePredictor:
         self.max_text_len = None
         self.x_bot_list = []
         self.bot_list = []
+        self.additional_feats_enabled = True
 
     # predict bot similarity score on a single tweet
     def predict(self, tweet_pred):
@@ -33,7 +35,10 @@ class SinglePredictor:
         x_doc_list = np.array(x_doc_list)
 
         # calculate word overlapping additional feature
-        additional_feat = utils.compute_overlap_features(self.bot_list, tweet_pred_list)
+        if self.additional_feats_enabled:
+            additional_feat = utils.compute_overlap_features(self.bot_list, tweet_pred_list)
+        else:
+            additional_feat = np.zeros(len(self.bot_list))
 
         predict_list = self.model.predict([self.x_bot_list, x_doc_list, additional_feat], verbose=1)
 
@@ -48,13 +53,14 @@ class SinglePredictor:
 
         model = load_model(model_path)
         with open(pickle_path, 'rb') as f:
-            x_bot_list, bot_list, tokenizer, max_text_len = pickle.load(f)
+            x_bot_list, bot_list, tokenizer, max_text_len, additional_feats_enabled = pickle.load(f)
 
         self.model = model
         self.x_bot_list = x_bot_list
         self.bot_list = bot_list
         self.tokenizer = tokenizer
         self.max_text_len = max_text_len
+        self.additional_feats_enabled = additional_feats_enabled
 
 
 class MultiPredictor(SinglePredictor):
