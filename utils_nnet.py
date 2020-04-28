@@ -33,8 +33,11 @@ class ModelCommon:
         # convert text to lower-case
         nopunc = text.lower().strip()
 
+        # remove users tags
+        nopunc = re.sub('@(.+?)(?<=\b)', '', nopunc)
+
         # remove prefixes and users tags
-        nopunc = re.sub('^rt ', '', nopunc)
+        nopunc = re.sub('^rt\s*:', '', nopunc)
 
         # remove enojies
         nopunc = nopunc.encode('ascii', 'ignore').decode('ascii')
@@ -61,3 +64,9 @@ class ModelCommon:
         x_text = tokenizer.texts_to_sequences(text_list)
         x_padded = pad_sequences(x_text, maxlen=max_text_len, padding='post', truncating='post')
         return x_padded
+
+    @staticmethod
+    def remove_duplicates(text_list):
+        query_set = set(map(tuple, text_list))
+        unique_list = list(map(list, query_set))
+        return unique_list
