@@ -158,4 +158,5 @@ class ModelTrainer:
 
         # saving all variables for next uses
         with open(pickle_path, 'wb') as f:
-            pickle.dump([self.x_bot_tweets, self.bot_tweets, self.dataset.tokenizer, self.dataset.max_text_len, self.additional_feats_enabled], f)
+            pickle.dump([self.x_bot_tweets, self.bot_tweets, self.dataset.tokenizer,
+                         self.dataset.max_text_len, self.additional_feats_enabled], f)

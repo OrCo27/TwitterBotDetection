@@ -1,0 +1,10 @@
+<RCC>
+  <qresource>
+    <file>../images/logo.png</file>
+    <file>../images/save.png</file>
+    <file>../images/stop.png</file>
+    <file>../images/run.gif</file>
+	<file>../images/homepage.png</file>
+	<file>../images/help.png</file>
+  </qresource>
+</RCC>

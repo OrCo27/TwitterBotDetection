@@ -1,0 +1,37 @@
+QWidget {
+background: white
+}
+
+QLabel#lbl_title {
+font: 75 30pt "Microsoft YaHei UI";
+font-weight: bold;
+qproperty-alignment: AlignCenter;
+color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #004a7c, stop:1 #005691);
+}
+
+QLabel#lbl_created {
+font: 75 10pt "Microsoft YaHei UI";
+font-weight: bold;
+color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #004a7c, stop:1 #005691);
+}
+
+QPushButton {
+font: 75 13pt "Microsoft YaHei UI";
+font-weight: bold;
+color: rgb(255, 255, 255);
+background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #004a7c, stop:1 #005691);
+border-style: solid;
+border-radius:21px;
+}
+
+QPushButton:hover {
+background: qradialgradient(cx: 0.3, cy: -0.4,
+fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #2F4F4F, stop: 1 #2F4F4F);
+}
+
+QPushButton:pressed {
+background: qradialgradient(cx: 0.4, cy: -0.1,
+fx: 0.4, fy: -0.1,
+radius: 1.35, stop: 0 #a9a9a9, stop: 1 #a9a9a9);
+}
