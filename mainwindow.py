@@ -1,6 +1,7 @@
 from modelconfig import ModelConfigController
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QFile, QTextStream
+import ctypes
 import sys
 sys.path.append('gui/')
 from gui.mainwindow_ui import Ui_MainMenu
@@ -13,6 +14,8 @@ class MainWindowController(QMainWindow):
         self.ui = Ui_MainMenu()
         self.ui.setupUi(self.main)
         self._load_stylesheet()
+
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('FinalProject.TweetBotDetector')
 
         # connect listeners
         self.ui.btn_config.clicked.connect(self.open_model_config_gui)
