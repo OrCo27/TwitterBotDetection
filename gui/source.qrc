@@ -6,5 +6,6 @@
     <file>../images/run.gif</file>
 	<file>../images/homepage.png</file>
 	<file>../images/help.png</file>
+	<file>../images/icon.png</file>
   </qresource>
 </RCC>
