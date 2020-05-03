@@ -11,8 +11,107 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ModelConfig(object):
     def setupUi(self, ModelConfig):
         ModelConfig.setObjectName("ModelConfig")
-        ModelConfig.resize(964, 683)
-        ModelConfig.setStyleSheet("")
+        ModelConfig.resize(1186, 683)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/images/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        ModelConfig.setWindowIcon(icon)
+        ModelConfig.setStyleSheet("QLabel#lbl_title {\n"
+"font: 75 20pt \"Microsoft YaHei UI\";\n"
+"font-weight: bold;\n"
+"qproperty-alignment: AlignCenter;\n"
+"color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #3643f7, stop:1 #3643f7);\n"
+"}\n"
+"\n"
+"#btn_homepage {\n"
+"background: transparent;\n"
+"border-radius: 19px;\n"
+"}\n"
+"\n"
+"#btn_homepage::hover {\n"
+"background: #3f72af;\n"
+"}\n"
+"\n"
+"#btn_help {\n"
+"background: transparent;\n"
+"border-radius: 19px;\n"
+"}\n"
+"\n"
+"#btn_help::hover {\n"
+"background: #3f72af;\n"
+"}\n"
+"\n"
+"#btn_start, #btn_stop, #btn_save {\n"
+"font: 75 13pt \"Microsoft YaHei UI\";\n"
+"font-weight: bold;\n"
+"}\n"
+"\n"
+"QSlider::groove:horizontal {\n"
+"border: 1px solid #bbb;\n"
+"background: white;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal {\n"
+"background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,\n"
+"    stop: 0 #66e, stop: 1 #bbf);\n"
+"background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,\n"
+"    stop: 0 #bbf, stop: 1 #55f);\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal {\n"
+"background: #fff;\n"
+"border: 1px solid #777;\n"
+"height: 10px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #eee, stop:1 #ccc);\n"
+"border: 1px solid #777;\n"
+"width: 13px;\n"
+"margin-top: -2px;\n"
+"margin-bottom: -2px;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:hover {\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:1,\n"
+"    stop:0 #fff, stop:1 #ddd);\n"
+"border: 1px solid #444;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QSlider::sub-page:horizontal:disabled {\n"
+"background: #bbb;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::add-page:horizontal:disabled {\n"
+"background: #eee;\n"
+"border-color: #999;\n"
+"}\n"
+"\n"
+"QSlider::handle:horizontal:disabled {\n"
+"background: #eee;\n"
+"border: 1px solid #aaa;\n"
+"border-radius: 4px;\n"
+"}\n"
+"\n"
+"QProgressBar:horizontal {\n"
+"border: 1px solid gray;\n"
+"border-radius: 3px;\n"
+"background: white;\n"
+"padding: 1px;\n"
+"}\n"
+"QProgressBar::chunk:horizontal {\n"
+"background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,\n"
+"    stop: 0 #66e, stop: 1 #bbf);\n"
+"}")
         self.verticalLayout_13 = QtWidgets.QVBoxLayout(ModelConfig)
         self.verticalLayout_13.setContentsMargins(-1, 5, -1, 8)
         self.verticalLayout_13.setSpacing(5)
@@ -23,17 +122,17 @@ class Ui_ModelConfig(object):
         self.btn_homepage = QtWidgets.QToolButton(ModelConfig)
         self.btn_homepage.setAutoFillBackground(False)
         self.btn_homepage.setText("")
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/images/homepage.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_homepage.setIcon(icon)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/images/homepage.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btn_homepage.setIcon(icon1)
         self.btn_homepage.setIconSize(QtCore.QSize(35, 35))
         self.btn_homepage.setObjectName("btn_homepage")
         self.horizontalLayout_11.addWidget(self.btn_homepage)
         self.btn_help = QtWidgets.QToolButton(ModelConfig)
         self.btn_help.setText("")
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/images/help.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_help.setIcon(icon1)
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(":/images/help.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btn_help.setIcon(icon2)
         self.btn_help.setIconSize(QtCore.QSize(35, 35))
         self.btn_help.setObjectName("btn_help")
         self.horizontalLayout_11.addWidget(self.btn_help)
@@ -52,16 +151,16 @@ class Ui_ModelConfig(object):
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.verticalFrame = QtWidgets.QFrame(ModelConfig)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.verticalFrame.sizePolicy().hasHeightForWidth())
         self.verticalFrame.setSizePolicy(sizePolicy)
-        self.verticalFrame.setMinimumSize(QtCore.QSize(364, 300))
-        self.verticalFrame.setMaximumSize(QtCore.QSize(366, 16777215))
+        self.verticalFrame.setMinimumSize(QtCore.QSize(430, 300))
+        self.verticalFrame.setMaximumSize(QtCore.QSize(450, 16777215))
         self.verticalFrame.setObjectName("verticalFrame")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalFrame)
-        self.verticalLayout.setContentsMargins(-1, 0, -1, 0)
+        self.verticalLayout.setContentsMargins(-1, 0, -1, 11)
         self.verticalLayout.setSpacing(5)
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalGroupBox = QtWidgets.QGroupBox(self.verticalFrame)
@@ -95,18 +194,33 @@ class Ui_ModelConfig(object):
         self.verticalLayout_4.setSpacing(6)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.textbox_embed = QtWidgets.QLineEdit(self.horizontalGroupBox)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.textbox_embed.sizePolicy().hasHeightForWidth())
+        self.textbox_embed.setSizePolicy(sizePolicy)
         self.textbox_embed.setMinimumSize(QtCore.QSize(200, 0))
-        self.textbox_embed.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.textbox_embed.setMaximumSize(QtCore.QSize(500, 16777215))
         self.textbox_embed.setObjectName("textbox_embed")
         self.verticalLayout_4.addWidget(self.textbox_embed)
         self.textbox_bot = QtWidgets.QLineEdit(self.horizontalGroupBox)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.textbox_bot.sizePolicy().hasHeightForWidth())
+        self.textbox_bot.setSizePolicy(sizePolicy)
         self.textbox_bot.setMinimumSize(QtCore.QSize(200, 0))
-        self.textbox_bot.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.textbox_bot.setMaximumSize(QtCore.QSize(500, 16777215))
         self.textbox_bot.setObjectName("textbox_bot")
         self.verticalLayout_4.addWidget(self.textbox_bot)
         self.textbox_human = QtWidgets.QLineEdit(self.horizontalGroupBox)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.textbox_human.sizePolicy().hasHeightForWidth())
+        self.textbox_human.setSizePolicy(sizePolicy)
         self.textbox_human.setMinimumSize(QtCore.QSize(200, 0))
-        self.textbox_human.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.textbox_human.setMaximumSize(QtCore.QSize(500, 16777215))
         self.textbox_human.setObjectName("textbox_human")
         self.verticalLayout_4.addWidget(self.textbox_human)
         self.horizontalLayout.addLayout(self.verticalLayout_4)
@@ -115,16 +229,31 @@ class Ui_ModelConfig(object):
         self.verticalLayout_5.setSpacing(6)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.btn_embed = QtWidgets.QPushButton(self.horizontalGroupBox)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btn_embed.sizePolicy().hasHeightForWidth())
+        self.btn_embed.setSizePolicy(sizePolicy)
         self.btn_embed.setMinimumSize(QtCore.QSize(35, 0))
         self.btn_embed.setMaximumSize(QtCore.QSize(35, 16777215))
         self.btn_embed.setObjectName("btn_embed")
         self.verticalLayout_5.addWidget(self.btn_embed)
         self.btn_bot = QtWidgets.QPushButton(self.horizontalGroupBox)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btn_bot.sizePolicy().hasHeightForWidth())
+        self.btn_bot.setSizePolicy(sizePolicy)
         self.btn_bot.setMinimumSize(QtCore.QSize(35, 0))
         self.btn_bot.setMaximumSize(QtCore.QSize(35, 16777215))
         self.btn_bot.setObjectName("btn_bot")
         self.verticalLayout_5.addWidget(self.btn_bot)
         self.btn_human = QtWidgets.QPushButton(self.horizontalGroupBox)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btn_human.sizePolicy().hasHeightForWidth())
+        self.btn_human.setSizePolicy(sizePolicy)
         self.btn_human.setMinimumSize(QtCore.QSize(35, 0))
         self.btn_human.setMaximumSize(QtCore.QSize(35, 16777215))
         self.btn_human.setObjectName("btn_human")
@@ -175,13 +304,13 @@ class Ui_ModelConfig(object):
         self.verticalLayout_6.setSpacing(6)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.slider_train = QtWidgets.QSlider(self.horizontalGroupBox1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.slider_train.sizePolicy().hasHeightForWidth())
         self.slider_train.setSizePolicy(sizePolicy)
-        self.slider_train.setMinimumSize(QtCore.QSize(180, 0))
-        self.slider_train.setMaximumSize(QtCore.QSize(180, 16777215))
+        self.slider_train.setMinimumSize(QtCore.QSize(255, 0))
+        self.slider_train.setMaximumSize(QtCore.QSize(255, 16777215))
         self.slider_train.setMinimum(0)
         self.slider_train.setMaximum(100)
         self.slider_train.setProperty("value", 25)
@@ -190,20 +319,20 @@ class Ui_ModelConfig(object):
         self.slider_train.setTickPosition(QtWidgets.QSlider.NoTicks)
         self.slider_train.setObjectName("slider_train")
         self.verticalLayout_6.addWidget(self.slider_train)
-        self.slider_validation = QtWidgets.QSlider(self.horizontalGroupBox1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.slider_val = QtWidgets.QSlider(self.horizontalGroupBox1)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.slider_validation.sizePolicy().hasHeightForWidth())
-        self.slider_validation.setSizePolicy(sizePolicy)
-        self.slider_validation.setMinimumSize(QtCore.QSize(180, 0))
-        self.slider_validation.setMaximumSize(QtCore.QSize(180, 16777215))
-        self.slider_validation.setMinimum(0)
-        self.slider_validation.setMaximum(100)
-        self.slider_validation.setProperty("value", 25)
-        self.slider_validation.setOrientation(QtCore.Qt.Horizontal)
-        self.slider_validation.setObjectName("slider_validation")
-        self.verticalLayout_6.addWidget(self.slider_validation)
+        sizePolicy.setHeightForWidth(self.slider_val.sizePolicy().hasHeightForWidth())
+        self.slider_val.setSizePolicy(sizePolicy)
+        self.slider_val.setMinimumSize(QtCore.QSize(255, 0))
+        self.slider_val.setMaximumSize(QtCore.QSize(255, 16777215))
+        self.slider_val.setMinimum(0)
+        self.slider_val.setMaximum(100)
+        self.slider_val.setProperty("value", 25)
+        self.slider_val.setOrientation(QtCore.Qt.Horizontal)
+        self.slider_val.setObjectName("slider_val")
+        self.verticalLayout_6.addWidget(self.slider_val)
         self.combobox_gen_method = QtWidgets.QComboBox(self.horizontalGroupBox1)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -222,7 +351,7 @@ class Ui_ModelConfig(object):
         self.verticalLayout_9.setSpacing(6)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.lbl_train = QtWidgets.QLabel(self.horizontalGroupBox1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lbl_train.sizePolicy().hasHeightForWidth())
@@ -230,18 +359,20 @@ class Ui_ModelConfig(object):
         self.lbl_train.setAlignment(QtCore.Qt.AlignCenter)
         self.lbl_train.setObjectName("lbl_train")
         self.verticalLayout_9.addWidget(self.lbl_train)
-        self.lbl_validation = QtWidgets.QLabel(self.horizontalGroupBox1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.lbl_val = QtWidgets.QLabel(self.horizontalGroupBox1)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lbl_validation.sizePolicy().hasHeightForWidth())
-        self.lbl_validation.setSizePolicy(sizePolicy)
-        self.lbl_validation.setAlignment(QtCore.Qt.AlignCenter)
-        self.lbl_validation.setObjectName("lbl_validation")
-        self.verticalLayout_9.addWidget(self.lbl_validation)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 30, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHeightForWidth(self.lbl_val.sizePolicy().hasHeightForWidth())
+        self.lbl_val.setSizePolicy(sizePolicy)
+        self.lbl_val.setAlignment(QtCore.Qt.AlignCenter)
+        self.lbl_val.setObjectName("lbl_val")
+        self.verticalLayout_9.addWidget(self.lbl_val)
+        spacerItem1 = QtWidgets.QSpacerItem(16, 30, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.verticalLayout_9.addItem(spacerItem1)
         self.horizontalLayout_2.addLayout(self.verticalLayout_9)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem2)
         self.verticalLayout.addWidget(self.horizontalGroupBox1)
         self.horizontalGroupBox2 = QtWidgets.QGroupBox(self.verticalFrame)
         self.horizontalGroupBox2.setObjectName("horizontalGroupBox2")
@@ -318,11 +449,11 @@ class Ui_ModelConfig(object):
         self.checkbox_additional_feats.setObjectName("checkbox_additional_feats")
         self.verticalLayout_8.addWidget(self.checkbox_additional_feats)
         self.horizontalLayout_3.addLayout(self.verticalLayout_8)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem2)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem3)
         self.verticalLayout.addWidget(self.horizontalGroupBox2)
-        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem3)
+        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem4)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setContentsMargins(14, 8, 14, 0)
         self.horizontalLayout_4.setSpacing(31)
@@ -330,9 +461,9 @@ class Ui_ModelConfig(object):
         self.btn_start = QtWidgets.QPushButton(self.verticalFrame)
         self.btn_start.setMinimumSize(QtCore.QSize(0, 35))
         self.btn_start.setMaximumSize(QtCore.QSize(16777215, 35))
-        icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/images/run.gif"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_start.setIcon(icon2)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(":/images/run.gif"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btn_start.setIcon(icon3)
         self.btn_start.setIconSize(QtCore.QSize(30, 30))
         self.btn_start.setObjectName("btn_start")
         self.horizontalLayout_4.addWidget(self.btn_start)
@@ -340,9 +471,9 @@ class Ui_ModelConfig(object):
         self.btn_stop.setEnabled(False)
         self.btn_stop.setMinimumSize(QtCore.QSize(0, 35))
         self.btn_stop.setMaximumSize(QtCore.QSize(16777215, 35))
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/images/stop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_stop.setIcon(icon3)
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(":/images/stop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btn_stop.setIcon(icon4)
         self.btn_stop.setIconSize(QtCore.QSize(25, 25))
         self.btn_stop.setObjectName("btn_stop")
         self.horizontalLayout_4.addWidget(self.btn_stop)
@@ -350,15 +481,31 @@ class Ui_ModelConfig(object):
         self.btn_save.setEnabled(False)
         self.btn_save.setMinimumSize(QtCore.QSize(0, 35))
         self.btn_save.setMaximumSize(QtCore.QSize(16777215, 35))
-        icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(":/images/save.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_save.setIcon(icon4)
+        icon5 = QtGui.QIcon()
+        icon5.addPixmap(QtGui.QPixmap(":/images/save.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btn_save.setIcon(icon5)
         self.btn_save.setIconSize(QtCore.QSize(25, 25))
         self.btn_save.setObjectName("btn_save")
         self.horizontalLayout_4.addWidget(self.btn_save)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
-        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem4)
+        spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem5)
+        self.horizontalGroupBox_4 = QtWidgets.QGroupBox(self.verticalFrame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.horizontalGroupBox_4.sizePolicy().hasHeightForWidth())
+        self.horizontalGroupBox_4.setSizePolicy(sizePolicy)
+        self.horizontalGroupBox_4.setObjectName("horizontalGroupBox_4")
+        self.horizontalLayout_10 = QtWidgets.QHBoxLayout(self.horizontalGroupBox_4)
+        self.horizontalLayout_10.setContentsMargins(10, 11, 10, 11)
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        self.textbox_log = QtWidgets.QPlainTextEdit(self.horizontalGroupBox_4)
+        self.textbox_log.setReadOnly(True)
+        self.textbox_log.setPlainText("")
+        self.textbox_log.setObjectName("textbox_log")
+        self.horizontalLayout_10.addWidget(self.textbox_log)
+        self.verticalLayout.addWidget(self.horizontalGroupBox_4)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setContentsMargins(14, 8, 14, 0)
         self.horizontalLayout_5.setSpacing(6)
@@ -391,16 +538,16 @@ class Ui_ModelConfig(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.progressbar_epoches.sizePolicy().hasHeightForWidth())
         self.progressbar_epoches.setSizePolicy(sizePolicy)
-        self.progressbar_epoches.setMinimumSize(QtCore.QSize(0, 20))
-        self.progressbar_epoches.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.progressbar_epoches.setMinimumSize(QtCore.QSize(0, 17))
+        self.progressbar_epoches.setMaximumSize(QtCore.QSize(16777215, 17))
         self.progressbar_epoches.setProperty("value", 0)
         self.progressbar_epoches.setAlignment(QtCore.Qt.AlignCenter)
         self.progressbar_epoches.setTextDirection(QtWidgets.QProgressBar.TopToBottom)
         self.progressbar_epoches.setObjectName("progressbar_epoches")
         self.verticalLayout_11.addWidget(self.progressbar_epoches)
         self.progressbar_batch = QtWidgets.QProgressBar(self.verticalFrame)
-        self.progressbar_batch.setMinimumSize(QtCore.QSize(0, 20))
-        self.progressbar_batch.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.progressbar_batch.setMinimumSize(QtCore.QSize(0, 17))
+        self.progressbar_batch.setMaximumSize(QtCore.QSize(16777215, 17))
         self.progressbar_batch.setProperty("value", 0)
         self.progressbar_batch.setAlignment(QtCore.Qt.AlignCenter)
         self.progressbar_batch.setObjectName("progressbar_batch")
@@ -419,16 +566,17 @@ class Ui_ModelConfig(object):
         self.verticalLayout_12.setContentsMargins(-1, 0, -1, 0)
         self.verticalLayout_12.setSpacing(5)
         self.verticalLayout_12.setObjectName("verticalLayout_12")
-        self.horizontalGroupBox_4 = QtWidgets.QGroupBox(self.verticalFrame_11)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.horizontalFrame_4 = QtWidgets.QFrame(self.verticalFrame_11)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.horizontalGroupBox_4.sizePolicy().hasHeightForWidth())
-        self.horizontalGroupBox_4.setSizePolicy(sizePolicy)
-        self.horizontalGroupBox_4.setObjectName("horizontalGroupBox_4")
-        self.horizontalLayout_8 = QtWidgets.QHBoxLayout(self.horizontalGroupBox_4)
+        sizePolicy.setHeightForWidth(self.horizontalFrame_4.sizePolicy().hasHeightForWidth())
+        self.horizontalFrame_4.setSizePolicy(sizePolicy)
+        self.horizontalFrame_4.setObjectName("horizontalFrame_4")
+        self.horizontalLayout_8 = QtWidgets.QHBoxLayout(self.horizontalFrame_4)
+        self.horizontalLayout_8.setContentsMargins(-1, 6, -1, -1)
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
-        self.graph_acc_epoch = PlotWidget(self.horizontalGroupBox_4)
+        self.graph_acc_epoch = PlotWidget(self.horizontalFrame_4)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -438,7 +586,7 @@ class Ui_ModelConfig(object):
         self.graph_acc_epoch.setMaximumSize(QtCore.QSize(9999999, 9999999))
         self.graph_acc_epoch.setObjectName("graph_acc_epoch")
         self.horizontalLayout_8.addWidget(self.graph_acc_epoch)
-        self.graph_loss_epoch = PlotWidget(self.horizontalGroupBox_4)
+        self.graph_loss_epoch = PlotWidget(self.horizontalFrame_4)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -448,42 +596,28 @@ class Ui_ModelConfig(object):
         self.graph_loss_epoch.setMaximumSize(QtCore.QSize(9999999, 9999999))
         self.graph_loss_epoch.setObjectName("graph_loss_epoch")
         self.horizontalLayout_8.addWidget(self.graph_loss_epoch)
-        self.verticalLayout_12.addWidget(self.horizontalGroupBox_4)
-        self.horizontalGroupBox_41 = QtWidgets.QGroupBox(self.verticalFrame_11)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.verticalLayout_12.addWidget(self.horizontalFrame_4)
+        self.horizontalFrame_41 = QtWidgets.QFrame(self.verticalFrame_11)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.horizontalGroupBox_41.sizePolicy().hasHeightForWidth())
-        self.horizontalGroupBox_41.setSizePolicy(sizePolicy)
-        self.horizontalGroupBox_41.setObjectName("horizontalGroupBox_41")
-        self.horizontalLayout_9 = QtWidgets.QHBoxLayout(self.horizontalGroupBox_41)
+        sizePolicy.setHeightForWidth(self.horizontalFrame_41.sizePolicy().hasHeightForWidth())
+        self.horizontalFrame_41.setSizePolicy(sizePolicy)
+        self.horizontalFrame_41.setObjectName("horizontalFrame_41")
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout(self.horizontalFrame_41)
+        self.horizontalLayout_9.setContentsMargins(-1, 0, -1, -1)
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
-        self.graph_acc_batch = PlotWidget(self.horizontalGroupBox_41)
+        self.graph_acc_batch = PlotWidget(self.horizontalFrame_41)
         self.graph_acc_batch.setMinimumSize(QtCore.QSize(200, 200))
         self.graph_acc_batch.setObjectName("graph_acc_batch")
         self.horizontalLayout_9.addWidget(self.graph_acc_batch)
-        self.graph_loss_batch = PlotWidget(self.horizontalGroupBox_41)
+        self.graph_loss_batch = PlotWidget(self.horizontalFrame_41)
         self.graph_loss_batch.setMinimumSize(QtCore.QSize(200, 200))
         self.graph_loss_batch.setObjectName("graph_loss_batch")
         self.horizontalLayout_9.addWidget(self.graph_loss_batch)
-        self.verticalLayout_12.addWidget(self.horizontalGroupBox_41)
+        self.verticalLayout_12.addWidget(self.horizontalFrame_41)
         self.horizontalLayout_6.addWidget(self.verticalFrame_11)
         self.verticalLayout_13.addLayout(self.horizontalLayout_6)
-        self.horizontalGroupBox_42 = QtWidgets.QGroupBox(ModelConfig)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.horizontalGroupBox_42.sizePolicy().hasHeightForWidth())
-        self.horizontalGroupBox_42.setSizePolicy(sizePolicy)
-        self.horizontalGroupBox_42.setObjectName("horizontalGroupBox_42")
-        self.horizontalLayout_10 = QtWidgets.QHBoxLayout(self.horizontalGroupBox_42)
-        self.horizontalLayout_10.setContentsMargins(10, 11, 10, 11)
-        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
-        self.textbox_log = QtWidgets.QPlainTextEdit(self.horizontalGroupBox_42)
-        self.textbox_log.setReadOnly(True)
-        self.textbox_log.setObjectName("textbox_log")
-        self.horizontalLayout_10.addWidget(self.textbox_log)
-        self.verticalLayout_13.addWidget(self.horizontalGroupBox_42)
 
         self.retranslateUi(ModelConfig)
         QtCore.QMetaObject.connectSlotsByName(ModelConfig)
@@ -508,7 +642,7 @@ class Ui_ModelConfig(object):
         self.combobox_gen_method.setItemText(0, _translate("ModelConfig", "User Grouping"))
         self.combobox_gen_method.setItemText(1, _translate("ModelConfig", "Random Pairing"))
         self.lbl_train.setText(_translate("ModelConfig", "20%"))
-        self.lbl_validation.setText(_translate("ModelConfig", "20%"))
+        self.lbl_val.setText(_translate("ModelConfig", "20%"))
         self.horizontalGroupBox2.setTitle(_translate("ModelConfig", "Training Parameters"))
         self.label_7.setText(_translate("ModelConfig", "Batch Size:"))
         self.label_8.setText(_translate("ModelConfig", "Epoches:"))
@@ -517,11 +651,9 @@ class Ui_ModelConfig(object):
         self.btn_start.setText(_translate("ModelConfig", "Start"))
         self.btn_stop.setText(_translate("ModelConfig", "Stop"))
         self.btn_save.setText(_translate("ModelConfig", "Save"))
+        self.horizontalGroupBox_4.setTitle(_translate("ModelConfig", "Log"))
         self.label_13.setText(_translate("ModelConfig", "Epoches"))
         self.label_12.setText(_translate("ModelConfig", "Batch"))
-        self.horizontalGroupBox_4.setTitle(_translate("ModelConfig", "Per Epoch"))
-        self.horizontalGroupBox_41.setTitle(_translate("ModelConfig", "Per Batch"))
-        self.horizontalGroupBox_42.setTitle(_translate("ModelConfig", "Log"))
 
 from pyqtgraph import PlotWidget
 import source_rc

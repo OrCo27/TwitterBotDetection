@@ -23,6 +23,11 @@ border-radius: 19px;
 background: #3f72af;
 }
 
+#btn_start, #btn_stop, #btn_save {
+font: 75 13pt "Microsoft YaHei UI";
+font-weight: bold;
+}
+
 QSlider::groove:horizontal {
 border: 1px solid #bbb;
 background: white;
