@@ -4,12 +4,14 @@ from dataset_parser import DatasetBuilder, DatasetConfig
 from logger import Log
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
+from threading import Thread
 import os.path
 import numpy as np
 import os
 import pickle
 from os import path
 from embedding import Embedding
+
 
 class ModelTrainer:
     def __init__(self, logger=Log(print), embedding_file='data/wiki-news-300d-1M.vec',
@@ -160,3 +162,12 @@ class ModelTrainer:
         with open(pickle_path, 'wb') as f:
             pickle.dump([self.x_bot_tweets, self.bot_tweets, self.dataset.tokenizer,
                          self.dataset.max_text_len, self.additional_feats_enabled], f)
+
+
+class ModelTrainerThread(Thread):
+    def __init__(self, model_train):
+        super().__init__()
+        self.model_train = model_train
+
+    def run(self):
+        self.model_train.train_model()
