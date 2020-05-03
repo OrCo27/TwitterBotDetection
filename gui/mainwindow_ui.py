@@ -17,7 +17,47 @@ class Ui_MainMenu(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainMenu.sizePolicy().hasHeightForWidth())
         MainMenu.setSizePolicy(sizePolicy)
-        MainMenu.setStyleSheet("")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/images/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainMenu.setWindowIcon(icon)
+        MainMenu.setWindowOpacity(1.0)
+        MainMenu.setStyleSheet("QWidget {\n"
+"background: white\n"
+"}\n"
+"\n"
+"QLabel#lbl_title {\n"
+"font: 75 30pt \"Microsoft YaHei UI\";\n"
+"font-weight: bold;\n"
+"qproperty-alignment: AlignCenter;\n"
+"color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #004a7c, stop:1 #005691);\n"
+"}\n"
+"\n"
+"QLabel#lbl_created {\n"
+"font: 75 10pt \"Microsoft YaHei UI\";\n"
+"font-weight: bold;\n"
+"color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #004a7c, stop:1 #005691);\n"
+"}\n"
+"\n"
+"QPushButton {\n"
+"font: 75 13pt \"Microsoft YaHei UI\";\n"
+"font-weight: bold;\n"
+"color: rgb(255, 255, 255);\n"
+"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #004a7c, stop:1 #005691);\n"
+"border-style: solid;\n"
+"border-radius:21px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"background: qradialgradient(cx: 0.3, cy: -0.4,\n"
+"fx: 0.3, fy: -0.4,\n"
+"radius: 1.35, stop: 0 #2F4F4F, stop: 1 #2F4F4F);\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"background: qradialgradient(cx: 0.4, cy: -0.1,\n"
+"fx: 0.4, fy: -0.1,\n"
+"radius: 1.35, stop: 0 #a9a9a9, stop: 1 #a9a9a9);\n"
+"}")
         self.gridLayout = QtWidgets.QGridLayout(MainMenu)
         self.gridLayout.setContentsMargins(-1, 0, -1, -1)
         self.gridLayout.setHorizontalSpacing(0)
@@ -33,9 +73,9 @@ class Ui_MainMenu(object):
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
-        font.setBold(False)
+        font.setBold(True)
         font.setItalic(False)
-        font.setWeight(50)
+        font.setWeight(75)
         self.lbl_created.setFont(font)
         self.lbl_created.setObjectName("lbl_created")
         self.gridLayout.addWidget(self.lbl_created, 6, 0, 1, 1)
@@ -59,7 +99,11 @@ class Ui_MainMenu(object):
         self.btn_config.setMinimumSize(QtCore.QSize(360, 50))
         self.btn_config.setMaximumSize(QtCore.QSize(390, 50))
         font = QtGui.QFont()
-        font.setPointSize(16)
+        font.setFamily("Microsoft YaHei UI")
+        font.setPointSize(13)
+        font.setBold(True)
+        font.setItalic(False)
+        font.setWeight(75)
         self.btn_config.setFont(font)
         self.btn_config.setObjectName("btn_config")
         self.gridLayout_2.addWidget(self.btn_config, 0, 0, 1, 1)
@@ -72,7 +116,11 @@ class Ui_MainMenu(object):
         self.btn_multi.setMinimumSize(QtCore.QSize(360, 50))
         self.btn_multi.setMaximumSize(QtCore.QSize(390, 50))
         font = QtGui.QFont()
-        font.setPointSize(16)
+        font.setFamily("Microsoft YaHei UI")
+        font.setPointSize(13)
+        font.setBold(True)
+        font.setItalic(False)
+        font.setWeight(75)
         self.btn_multi.setFont(font)
         self.btn_multi.setObjectName("btn_multi")
         self.gridLayout_2.addWidget(self.btn_multi, 2, 0, 1, 1)
@@ -85,7 +133,11 @@ class Ui_MainMenu(object):
         self.btn_single.setMinimumSize(QtCore.QSize(360, 50))
         self.btn_single.setMaximumSize(QtCore.QSize(390, 50))
         font = QtGui.QFont()
-        font.setPointSize(16)
+        font.setFamily("Microsoft YaHei UI")
+        font.setPointSize(13)
+        font.setBold(True)
+        font.setItalic(False)
+        font.setWeight(75)
         self.btn_single.setFont(font)
         self.btn_single.setObjectName("btn_single")
         self.gridLayout_2.addWidget(self.btn_single, 1, 0, 1, 1)
