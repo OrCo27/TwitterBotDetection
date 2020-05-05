@@ -3,8 +3,18 @@ import time
 class Log:
     def __init__(self, log_method):
         self.log_method = log_method
+        self.disabled = False
+
+    def disable_log(self):
+        self.disabled = True
+
+    def enable_log(self):
+        self.disabled = False
 
     def write_log(self, description, title=None, timestamp=True):
+        if self.disabled:
+            return
+
         named_tuple = time.localtime()  # get struct_time
 
         if timestamp:

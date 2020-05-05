@@ -7,6 +7,8 @@ class CallBackNNet(Callback):
         self.logger = logger
         self.conf_controller = conf_controller
 
+    #TODO: add exit breakpoints every epoch/batch
+
     def on_epoch_begin(self, epoch, logs=None):
         """ Called at the start of an epoch """
         pass
@@ -17,6 +19,9 @@ class CallBackNNet(Callback):
 
     def on_batch_end(self, batch, logs=None):
         """ Called at the end of a training batch in fit methods """
+        pass
+
+    def on_batch_begin(self, batch, logs=None):
         pass
 
     def on_predict_begin(logs=None):

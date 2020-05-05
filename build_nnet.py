@@ -11,15 +11,21 @@ import os
 import pickle
 from os import path
 from embedding import Embedding
+from callbacks_nnet import CallBackNNet
+import sys
 
 
 class ModelTrainer:
     def __init__(self, logger=Log(print), embedding_file='data/wiki-news-300d-1M.vec',
                  bots_file='data/bots_tweets.txt', human_file='data/human_tweets.txt',
                  validation_split=0.2, test_split=0.2, batch_size=50, epochs=25,
-                 additional_feats_enabled=True, dataset_config=DatasetConfig.USER_STATE):
+                 additional_feats_enabled=True, config_controller=None,
+                 dataset_config=DatasetConfig.USER_STATE):
 
-        self.dataset = DatasetBuilder(logger, dataset_config)
+        self.config_controller = config_controller
+        self.change_widgets_state = config_controller.change_widgets_disabled
+        self.is_stopped_func = config_controller.is_stopped
+        self.dataset = DatasetBuilder(logger, self.check_exit_breakpoint, dataset_config)
         _,self.dataset_config_name = dataset_config
         self.logger = logger
         self.embedding = Embedding(logger, embedding_file)
@@ -39,13 +45,22 @@ class ModelTrainer:
 
     def train_model(self):
         # load exists dataset or create a new one if not exists
-        self._load_datset()
+        #self._load_datset()
+
+        # build dataset for training
+        self.dataset.perform_build(self.bots_file, self.human_file, self.additional_feats_enabled)
+
+        # stopping break - if there is a request - exit
+        self.check_exit_breakpoint()
 
         self.logger.write_log('Splitting datasets into train and test sets')
 
         data_train, data_test = self._split_train_test_sets()
         q_train, d_train, addn_feat_train, y_train = data_train
         q_test, d_test, addn_feat_test, y_test = data_test
+
+        # stopping break - if there is a request - exit
+        self.check_exit_breakpoint()
 
         self.logger.write_log(f'trains samples: {len(q_train)}')
         self.logger.write_log(f'test samples: {len(q_test)}')
@@ -63,6 +78,9 @@ class ModelTrainer:
         x_q_test = utils.convert_text_to_sequences(tokenizer, q_test, max_text_len)
         x_d_test = utils.convert_text_to_sequences(tokenizer, d_test, max_text_len)
 
+        # stopping break - if there is a request - exit
+        self.check_exit_breakpoint()
+
         # prepare data for predicting
         self.bot_tweets = self._get_unique_matches(q_train, y_train)
         self.x_bot_tweets = utils.convert_text_to_sequences(tokenizer, self.bot_tweets, max_text_len)
@@ -75,6 +93,9 @@ class ModelTrainer:
         self.model = self._create_model(vocabulary, max_text_len, addit_feat_len)
 
         self.logger.write_log(f'Start training process..')
+
+        # stopping break - if there is a request - exit
+        self.check_exit_breakpoint()
 
         # start fitting model
         history = self.model.fit([np.array(x_q_train), np.array(x_d_train), np.array(addn_feat_train)],
@@ -92,6 +113,14 @@ class ModelTrainer:
                                      verbose=0)
 
         self.logger.write_log(f'test loss={result[0]:.4f}, test accuracy={result[1]:.4f}', 'evaluate')
+
+    # stopping break - if there is a request - exit
+    def check_exit_breakpoint(self):
+        if self.is_stopped_func():
+            self.logger.enable_log()
+            self.logger.write_log('Stopped Process Done Successfully!')
+            self.change_widgets_state(False)
+            sys.exit()
 
     def _get_unique_matches(self, query_train, label_train):
         lst = list(zip(query_train, label_train))
@@ -124,7 +153,9 @@ class ModelTrainer:
                                    mode='auto',
                                    restore_best_weights=True)
 
-        return [early_stop]
+        custom_callback = CallBackNNet(self.logger, self.config_controller)
+
+        return [early_stop, custom_callback]
 
     def _create_model(self, vocabulary, max_text_len, addit_feat_len):
         # load embedding matrix

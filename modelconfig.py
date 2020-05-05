@@ -11,6 +11,7 @@ from dataset_parser import DatasetConfig
 from logger import Log
 import random
 
+
 class ModelConfigController(QMainWindow):
     def __init__(self, parent=None):
         super(ModelConfigController, self).__init__(parent)
@@ -26,14 +27,15 @@ class ModelConfigController(QMainWindow):
             "ACC_BATCH": self.ui.graph_acc_batch,
             "LOSS_BATCH": self.ui.graph_loss_batch
         }
+        self.stop_requested = False
         self.model = None
         self.model_thread = None
         self.log = None
 
         # initialize default paths
-        self.ui.textbox_embed.setText('data/glove.twitter.27B.200d.txt')
-        self.ui.textbox_bot.setText('data/bots_tweets.txt')
-        self.ui.textbox_human.setText('data/human_tweets.txt')
+        self.ui.textbox_embed.setText('C:/Users/אור כהן/PycharmProjects/TwitterBotDetection/data/glove.twitter.27B.200d.txt')
+        self.ui.textbox_bot.setText('C:/Users/אור כהן/PycharmProjects/TwitterBotDetection/data/bots_tweets.txt')
+        self.ui.textbox_human.setText('C:/Users/אור כהן/PycharmProjects/TwitterBotDetection/data/human_tweets.txt')
 
         # initialize legends
         self.legend_acc = pg.LegendItem((70, 40), offset=(62, 30))
@@ -63,6 +65,7 @@ class ModelConfigController(QMainWindow):
         self.ui.btn_bot.clicked.connect(lambda: self.open_file(self.ui.textbox_bot))
         self.ui.btn_human.clicked.connect(lambda: self.open_file(self.ui.textbox_human))
         self.ui.btn_start.clicked.connect(self.start_train)
+        self.ui.btn_stop.clicked.connect(self.stop_train)
 
     def _load_stylesheet(self):
         file = QFile('./css/ModelConfig.qss')
@@ -82,7 +85,28 @@ class ModelConfigController(QMainWindow):
         self.parent.show()
         self.main.close()
 
+    def is_stopped(self):
+        return self.stop_requested
+
+    def stop_train(self):
+        self.log.write_log("Send request for stopping...")
+        self.stop_requested = True;
+        self.log.disable_log()
+
+    def change_widgets_disabled(self, state):
+        self.ui.btn_stop.setDisabled(not state)
+        self.ui.btn_start.setDisabled(state)
+        self.ui.groupbox_inputs.setDisabled(state)
+        self.ui.groupbox_dataset.setDisabled(state)
+        self.ui.groupbox_trainparams.setDisabled(state)
+
     def start_train(self):
+        # set log method for writing to log textbox
+        self.log = Log(self.ui.textbox_log.appendPlainText)
+
+        # disable unnecessery widgets when starting training
+        self.change_widgets_disabled(True)
+
         # get training parameters
         embedding_file = self.ui.textbox_embed.text()
         bot_file = self.ui.textbox_bot.text()
@@ -102,16 +126,13 @@ class ModelConfigController(QMainWindow):
         elif gen_method == "Random Pairing":
             dataset_config = DatasetConfig.RANDOM_STATE
 
-        # set log method for writing to log textbox
-        self.log = Log(self.ui.textbox_log.appendPlainText)
-
-        self.log.write_log("Start training phase...")
+        self.log.write_log("Start pre-training phase...")
 
         # create model instance with all parameters
         self.model = ModelTrainer(logger=self.log, embedding_file=embedding_file, bots_file=bot_file,
                                   human_file=human_file, validation_split=val_split, test_split=test_split,
                                   batch_size=batch_size, epochs=epoches, additional_feats_enabled=addit_feat_enabled,
-                                  dataset_config=dataset_config)
+                                  dataset_config=dataset_config, config_controller=self)
 
         # create a thread for training phase
         self.model_thread = ModelTrainerThread(self.model)

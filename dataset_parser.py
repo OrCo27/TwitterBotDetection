@@ -2,6 +2,7 @@ from utils_nnet import ModelCommon as utils
 from tensorflow.keras.preprocessing.text import Tokenizer
 import numpy as np
 import random
+import sys
 
 
 # enum for possible dataset configuration
@@ -11,7 +12,8 @@ class DatasetConfig:
 
 
 class DatasetBuilder:
-    def __init__(self, logger, dataset_config=DatasetConfig.USER_STATE):
+    def __init__(self, logger, check_exit_breakpoint, dataset_config=DatasetConfig.USER_STATE):
+        self.check_exit_breakpoint = check_exit_breakpoint
         self.tokenizer = Tokenizer()
         self.logger = logger
         self.config_id, self.config_name = dataset_config
@@ -111,6 +113,9 @@ class DatasetBuilder:
         final_labels = []
 
         for user in users_dict:
+            # stopping break - if there is a request - exit
+            self.check_exit_breakpoint()
+
             items_count = len(users_dict[user])
             # current user have only one tweet, pair to random human tweet
             if items_count == 1:
@@ -189,6 +194,9 @@ class DatasetBuilder:
         # and else it will get label=0 (different)
         final_bots, final_docs, final_labels = [], [], []
         for i in range(len(query_list)):
+            # stopping break - if there is a request - exit
+            self.check_exit_breakpoint()
+
             # select a random pair from the collection
             rand_doc = random.choice(pairs_mixed)
             doc_tweet, label = rand_doc
