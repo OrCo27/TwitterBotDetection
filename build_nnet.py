@@ -41,14 +41,14 @@ class ModelTrainer:
         # load exists dataset or create a new one if not exists
         self._load_datset()
 
-        self.logger.write_log('Splitting datasets into train and test sets', title='training')
+        self.logger.write_log('Splitting datasets into train and test sets')
 
         data_train, data_test = self._split_train_test_sets()
         q_train, d_train, addn_feat_train, y_train = data_train
         q_test, d_test, addn_feat_test, y_test = data_test
 
-        self.logger.write_log(f'trains samples: {len(q_train)}', title='training')
-        self.logger.write_log(f'test samples: {len(q_test)}', title='training')
+        self.logger.write_log(f'trains samples: {len(q_train)}')
+        self.logger.write_log(f'test samples: {len(q_test)}')
 
         # extract some parameters that uses for our model
         vocabulary = self.dataset.tokenizer.index_word
@@ -57,7 +57,7 @@ class ModelTrainer:
         tokenizer = self.dataset.tokenizer
 
         # convert texts to sequences
-        self.logger.write_log('convert texts to sequences', title='training')
+        self.logger.write_log('convert texts to sequences')
         x_q_train = utils.convert_text_to_sequences(tokenizer, q_train, max_text_len)
         x_d_train = utils.convert_text_to_sequences(tokenizer, d_train, max_text_len)
         x_q_test = utils.convert_text_to_sequences(tokenizer, q_test, max_text_len)
@@ -74,7 +74,7 @@ class ModelTrainer:
         # create our model with embedding matrix
         self.model = self._create_model(vocabulary, max_text_len, addit_feat_len)
 
-        self.logger.write_log(f'Start training process..', title='training')
+        self.logger.write_log(f'Start training process..')
 
         # start fitting model
         history = self.model.fit([np.array(x_q_train), np.array(x_d_train), np.array(addn_feat_train)],

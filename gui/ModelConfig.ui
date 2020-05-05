@@ -213,7 +213,7 @@ background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
      <item>
       <widget class="QFrame" name="verticalFrame">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -221,7 +221,7 @@ background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
        <property name="minimumSize">
         <size>
          <width>430</width>
-         <height>300</height>
+         <height>580</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -1211,6 +1211,12 @@ background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>600</width>
+         <height>0</height>
+        </size>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_12">
         <property name="spacing">

@@ -23,7 +23,7 @@ class DatasetBuilder:
         self.labels_list = []
 
     def perform_build(self, query_file_path, doc_file_path, additional_feats_enabled):
-        self.logger.write_log('Starting building datasets from files...', title='training')
+        self.logger.write_log('Starting building datasets from files...')
 
         # load all datasets from files
         query_list = self._load_file(query_file_path)

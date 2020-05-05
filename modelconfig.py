@@ -6,6 +6,9 @@ import sys
 import pyqtgraph as pg
 sys.path.append('gui/')
 from gui.modelconfig_ui import Ui_ModelConfig
+from build_nnet import ModelTrainer, ModelTrainerThread
+from dataset_parser import DatasetConfig
+from logger import Log
 import random
 
 class ModelConfigController(QMainWindow):
@@ -23,6 +26,9 @@ class ModelConfigController(QMainWindow):
             "ACC_BATCH": self.ui.graph_acc_batch,
             "LOSS_BATCH": self.ui.graph_loss_batch
         }
+        self.model = None
+        self.model_thread = None
+        self.log = None
 
         # initialize default paths
         self.ui.textbox_embed.setText('data/glove.twitter.27B.200d.txt')
@@ -56,6 +62,7 @@ class ModelConfigController(QMainWindow):
         self.ui.btn_embed.clicked.connect(lambda: self.open_file(self.ui.textbox_embed))
         self.ui.btn_bot.clicked.connect(lambda: self.open_file(self.ui.textbox_bot))
         self.ui.btn_human.clicked.connect(lambda: self.open_file(self.ui.textbox_human))
+        self.ui.btn_start.clicked.connect(self.start_train)
 
     def _load_stylesheet(self):
         file = QFile('./css/ModelConfig.qss')
@@ -74,6 +81,42 @@ class ModelConfigController(QMainWindow):
     def back_homepage(self):
         self.parent.show()
         self.main.close()
+
+    def start_train(self):
+        # get training parameters
+        embedding_file = self.ui.textbox_embed.text()
+        bot_file = self.ui.textbox_bot.text()
+        human_file = self.ui.textbox_human.text()
+        train_split = self.ui.slider_train.value() / 100.0
+        val_split = self.ui.slider_val.value() / 100.0
+        epoches = self.ui.spinbox_epoches.value()
+        batch_size = self.ui.spinbox_batch.value()
+        addit_feat_enabled = self.ui.checkbox_additional_feats.isChecked()
+
+        test_split = 1-train_split
+
+        # get dataset config from combobox
+        gen_method = str(self.ui.combobox_gen_method.currentText())
+        if gen_method == "User Grouping":
+            dataset_config = DatasetConfig.USER_STATE
+        elif gen_method == "Random Pairing":
+            dataset_config = DatasetConfig.RANDOM_STATE
+
+        # set log method for writing to log textbox
+        self.log = Log(self.ui.textbox_log.appendPlainText)
+
+        self.log.write_log("Start training phase...")
+
+        # create model instance with all parameters
+        self.model = ModelTrainer(logger=self.log, embedding_file=embedding_file, bots_file=bot_file,
+                                  human_file=human_file, validation_split=val_split, test_split=test_split,
+                                  batch_size=batch_size, epochs=epoches, additional_feats_enabled=addit_feat_enabled,
+                                  dataset_config=dataset_config)
+
+        # create a thread for training phase
+        self.model_thread = ModelTrainerThread(self.model)
+        self.model_thread.start() # run the thread to start training
+
 
     def slider_changed(self, slider_obj, lbl_obj):
         val = slider_obj.value()
