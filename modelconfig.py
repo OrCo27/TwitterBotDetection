@@ -115,6 +115,19 @@ class ModelConfigController(QMainWindow):
         self.ui.textbox_log.append(text)
         self.ui.textbox_log.moveCursor(QTextCursor.End)
 
+    def show_error(self, text, title):
+        frm = QMessageBox()
+        frm.setIcon(QMessageBox.Critical)
+        frm.setWindowTitle(title)
+        frm.setText(text)
+        frm.setStandardButtons(QMessageBox.Ok)
+
+        icon = QIcon()
+        icon.addPixmap(QPixmap(":/images/icon.png"), QIcon.Normal, QIcon.Off)
+        frm.setWindowIcon(icon)
+
+        frm.exec_()
+
     def reset_graphs(self):
         self.plot_batch_acc([0], [0])
         self.plot_batch_loss([0], [0])
@@ -122,6 +135,29 @@ class ModelConfigController(QMainWindow):
         self.plot_epoch_loss([0], [0], [0], [0])
 
     def start_train(self):
+        # get training parameters
+        embedding_file = self.ui.textbox_embed.text()
+        bot_file = self.ui.textbox_bot.text()
+        human_file = self.ui.textbox_human.text()
+        train_split = self.ui.slider_train.value() / 100.0
+        test_split = 1 - train_split
+        val_split = self.ui.slider_val.value() / 100.0
+        epoches = self.ui.spinbox_epoches.value()
+        batch_size = self.ui.spinbox_batch.value()
+        addit_feat_enabled = self.ui.checkbox_additional_feats.isChecked()
+        early_stop = self.ui.spinbox_earlystop.value()
+
+        # get dataset config from combobox
+        gen_method = str(self.ui.combobox_gen_method.currentText())
+        if gen_method == "User Grouping":
+            dataset_config = DatasetConfig.USER_STATE
+        elif gen_method == "Random Pairing":
+            dataset_config = DatasetConfig.RANDOM_STATE
+
+        if early_stop > epoches:
+            self.show_error(text="Can not insert early stop epochs that bigger than epochs number!", title="Input Error")
+            return
+
         self.stop_requested = False;
 
         # set log method for writing to log textbox
@@ -138,31 +174,13 @@ class ModelConfigController(QMainWindow):
         self.change_widgets_disabled(True)
         self.ui.btn_save.setDisabled(True)
 
-        # get training parameters
-        embedding_file = self.ui.textbox_embed.text()
-        bot_file = self.ui.textbox_bot.text()
-        human_file = self.ui.textbox_human.text()
-        train_split = self.ui.slider_train.value() / 100.0
-        test_split = 1 - train_split
-        val_split = self.ui.slider_val.value() / 100.0
-        epoches = self.ui.spinbox_epoches.value()
-        batch_size = self.ui.spinbox_batch.value()
-        addit_feat_enabled = self.ui.checkbox_additional_feats.isChecked()
-
-        # get dataset config from combobox
-        gen_method = str(self.ui.combobox_gen_method.currentText())
-        if gen_method == "User Grouping":
-            dataset_config = DatasetConfig.USER_STATE
-        elif gen_method == "Random Pairing":
-            dataset_config = DatasetConfig.RANDOM_STATE
-
         self.log.write_log("Start pre-training phase...")
 
         # create model instance with all parameters
         self.model = ModelTrainer(logger=self.log, embedding_file=embedding_file, bots_file=bot_file,
                                   human_file=human_file, validation_split=val_split, test_split=test_split,
                                   batch_size=batch_size, epochs=epoches, additional_feats_enabled=addit_feat_enabled,
-                                  dataset_config=dataset_config, config_controller=self)
+                                  early_stopping=early_stop, dataset_config=dataset_config, config_controller=self)
 
         # create a thread for training phase
         self.model_thread = ModelTrainerThread(self.model)

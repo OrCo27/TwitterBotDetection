@@ -788,7 +788,14 @@ background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Epoches:</string>
+                <string>Epochs:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Early Stopping After:</string>
                </property>
               </widget>
              </item>
@@ -873,6 +880,51 @@ background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
                 <number>15</number>
                </property>
               </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_12">
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QSpinBox" name="spinbox_earlystop">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>5</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>Epochs</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <widget class="QCheckBox" name="checkbox_additional_feats">

@@ -19,7 +19,7 @@ class ModelTrainer:
     def __init__(self, logger=Log(print), embedding_file='data/wiki-news-300d-1M.vec',
                  bots_file='data/bots_tweets.txt', human_file='data/human_tweets.txt',
                  validation_split=0.2, test_split=0.2, batch_size=50, epochs=25,
-                 additional_feats_enabled=True, config_controller=None,
+                 additional_feats_enabled=True, config_controller=None, early_stopping=5,
                  dataset_config=DatasetConfig.USER_STATE):
 
         self.config_controller = config_controller
@@ -31,6 +31,7 @@ class ModelTrainer:
         self.additional_feats_enabled = additional_feats_enabled
         self.batch_size = batch_size
         self.epochs = epochs
+        self.early_stopping = early_stopping
         self.validation_split = validation_split
         self.test_split = test_split
         self.bots_file = bots_file
@@ -154,7 +155,7 @@ class ModelTrainer:
         """
         early_stop = EarlyStopping(monitor='val_loss',
                                    min_delta=.01,
-                                   patience=3,
+                                   patience=self.early_stopping,
                                    verbose=1,
                                    mode='auto',
                                    restore_best_weights=True)
