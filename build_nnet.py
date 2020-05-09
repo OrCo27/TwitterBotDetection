@@ -23,8 +23,6 @@ class ModelTrainer:
                  dataset_config=DatasetConfig.USER_STATE):
 
         self.config_controller = config_controller
-        self.change_widgets_state = config_controller.change_widgets_disabled
-        self.is_stopped_func = config_controller.is_stopped
         self.dataset = DatasetBuilder(logger, self.check_exit_breakpoint, dataset_config)
         _,self.dataset_config_name = dataset_config
         self.logger = logger
@@ -106,21 +104,29 @@ class ModelTrainer:
                                  validation_split=self.validation_split,
                                  callbacks=self._get_callbacks())
 
-        self.logger.write_log(f'Start evaluating our model on test set', 'evaluate')
+        # stopping break - if there is a request - exit
+        self.check_exit_breakpoint()
 
-        # evaluate the model with test-set
-        result = self.model.evaluate([np.array(x_q_test), np.array(x_d_test), np.array(addn_feat_test)], np.array(y_test),
-                                     verbose=0)
+        # self.logger.write_log(f'Start evaluating our model on test set', 'evaluate')
+        #
+        # # evaluate the model with test-set
+        # result = self.model.evaluate([np.array(x_q_test), np.array(x_d_test), np.array(addn_feat_test)],
+        #                              np.array(y_test), verbose=1)
+        #
+        # self.logger.write_log(f'test loss={result[0]:.4f}, test accuracy={result[1]:.4f}', 'evaluate')
 
-        self.logger.write_log(f'test loss={result[0]:.4f}, test accuracy={result[1]:.4f}', 'evaluate')
+        self.logger.write_log('Training Process Completed Successfully!')
+
+        self.config_controller.change_widgets_disabled(False)
+        self.config_controller.ui.btn_save.setDisabled(False)
 
     # stopping break - if there is a request - exit
-    def check_exit_breakpoint(self):
-        if self.is_stopped_func():
+    def check_exit_breakpoint(self, exit_process=lambda: sys.exit()):
+        if self.config_controller.is_stopped():
             self.logger.enable_log()
             self.logger.write_log('Stopped Process Done Successfully!')
-            self.change_widgets_state(False)
-            sys.exit()
+            self.config_controller.change_widgets_disabled(False)
+            exit_process()
 
     def _get_unique_matches(self, query_train, label_train):
         lst = list(zip(query_train, label_train))
@@ -153,7 +159,7 @@ class ModelTrainer:
                                    mode='auto',
                                    restore_best_weights=True)
 
-        custom_callback = CallBackNNet(self.logger, self.config_controller)
+        custom_callback = CallBackNNet(self.logger, self.config_controller, self.check_exit_breakpoint)
 
         return [early_stop, custom_callback]
 
@@ -183,9 +189,8 @@ class ModelTrainer:
 
     def save_model(self, model_name):
         # saving the complete model including it's weights
-        full_path = os.path.join('output', model_name)
-        model_path = f'{full_path}_{self.dataset_config_name}.h5'
-        pickle_path = f'{full_path}_{self.dataset_config_name}.pickle'
+        model_path = f'{model_name}.h5'
+        pickle_path = f'{model_name}.pickle'
 
         self.model.save(model_path)
 
@@ -194,6 +199,7 @@ class ModelTrainer:
             pickle.dump([self.x_bot_tweets, self.bot_tweets, self.dataset.tokenizer,
                          self.dataset.max_text_len, self.additional_feats_enabled], f)
 
+        self.logger.write_log('Model Saved Successfully')
 
 class ModelTrainerThread(Thread):
     def __init__(self, model_train):

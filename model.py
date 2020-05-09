@@ -87,6 +87,4 @@ class RankingModel:
                       loss='binary_crossentropy',
                       metrics=['accuracy'])
 
-        self.logger.write_log(model.summary(), timestamp=False)
-
         return model
