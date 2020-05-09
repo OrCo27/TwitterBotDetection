@@ -91,7 +91,8 @@ border-radius: 3px;
 background: white;
 padding: 1px;
 }
+
 QProgressBar::chunk:horizontal {
 background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
-    stop: 0 #66e, stop: 1 #bbf);
+    stop: 0 #a8ff78, stop: 1 #78ffd6);
 }
