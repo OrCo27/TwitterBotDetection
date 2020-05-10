@@ -1,15 +1,14 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from pyqtgraph import PlotWidget, plot
 import sys
+import os
 import pyqtgraph as pg
 sys.path.append('gui/')
 from gui.modelconfig_ui import Ui_ModelConfig
 from build_nnet import ModelTrainer, ModelTrainerThread
 from dataset_parser import DatasetConfig
 from logger import Log
-import random
 
 
 class ModelConfigController(QMainWindow):
@@ -27,8 +26,8 @@ class ModelConfigController(QMainWindow):
 
         # create two lines for train and val for each epoch graphs
         # key-> train/val, value-> line
-        self.acc_epoch_lines = self.create_train_val_lines(self.ui.graph_acc_epoch, legend_offset=(62, 30))
-        self.loss_epoch_lines = self.create_train_val_lines(self.ui.graph_loss_epoch, legend_offset=(-30, 30))
+        self.acc_epoch_lines = self.create_train_val_lines(self.ui.graph_acc_epoch, legend_offset=(53, 30))
+        self.loss_epoch_lines = self.create_train_val_lines(self.ui.graph_loss_epoch, legend_offset=(-3, 30))
 
         # create single line for each batch graphs
         self.acc_batch_line = self.create_line(self.ui.graph_acc_batch)
@@ -134,6 +133,17 @@ class ModelConfigController(QMainWindow):
         self.plot_epoch_acc([0], [0], [0], [0])
         self.plot_epoch_loss([0], [0], [0], [0])
 
+    def file_validation(self, file_path, file_type):
+        if (file_path is None) or (not file_path):
+            raise Exception(f'{file_type} File Path is Empty!\nPlease Select a File For Starting a New Training.')
+
+        file_exists = os.path.isfile(file_path)
+        file_name = os.path.basename(file_path)
+        if not file_exists:
+            raise Exception(f'The {file_type} File: \'{file_name}\' is Not Exists!\nPlease Select Another One.')
+        elif os.stat(file_path).st_size == 0:
+            raise Exception(f'The {file_type} File: \'{file_name}\' is Empty!\nPlease Select Another One.')
+
     def start_train(self):
         # get training parameters
         embedding_file = self.ui.textbox_embed.text()
@@ -154,8 +164,19 @@ class ModelConfigController(QMainWindow):
         elif gen_method == "Random Pairing":
             dataset_config = DatasetConfig.RANDOM_STATE
 
+        # Check for early stop validity
         if early_stop > epoches:
-            self.show_error(text="Can not insert early stop epochs that bigger than epochs number!", title="Input Error")
+            self.show_error(text="Can not Insert Early Stop Epochs\nThat Bigger Than Training Epochs Number!",
+                            title="Input Error")
+            return
+
+        # check for files validity
+        try:
+            self.file_validation(embedding_file, 'Embedding')
+            self.file_validation(bot_file, 'Bot')
+            self.file_validation(human_file, 'Human')
+        except Exception as ex:
+            self.show_error(text=ex.args[0], title="Input Error")
             return
 
         self.stop_requested = False;
