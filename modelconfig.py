@@ -1,8 +1,8 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from utils_nnet import ModelCommon as Utils
 import sys
-import os
 import pyqtgraph as pg
 sys.path.append('gui/')
 from gui.modelconfig_ui import Ui_ModelConfig
@@ -114,35 +114,11 @@ class ModelConfigController(QMainWindow):
         self.ui.textbox_log.append(text)
         self.ui.textbox_log.moveCursor(QTextCursor.End)
 
-    def show_error(self, text, title):
-        frm = QMessageBox()
-        frm.setIcon(QMessageBox.Critical)
-        frm.setWindowTitle(title)
-        frm.setText(text)
-        frm.setStandardButtons(QMessageBox.Ok)
-
-        icon = QIcon()
-        icon.addPixmap(QPixmap(":/images/icon.png"), QIcon.Normal, QIcon.Off)
-        frm.setWindowIcon(icon)
-
-        frm.exec_()
-
     def reset_graphs(self):
         self.plot_batch_acc([0], [0])
         self.plot_batch_loss([0], [0])
         self.plot_epoch_acc([0], [0], [0], [0])
         self.plot_epoch_loss([0], [0], [0], [0])
-
-    def file_validation(self, file_path, file_type):
-        if (file_path is None) or (not file_path):
-            raise Exception(f'{file_type} File Path is Empty!\nPlease Select a File For Starting a New Training.')
-
-        file_exists = os.path.isfile(file_path)
-        file_name = os.path.basename(file_path)
-        if not file_exists:
-            raise Exception(f'The {file_type} File: \'{file_name}\' is Not Exists!\nPlease Select Another One.')
-        elif os.stat(file_path).st_size == 0:
-            raise Exception(f'The {file_type} File: \'{file_name}\' is Empty!\nPlease Select Another One.')
 
     def start_train(self):
         # get training parameters
@@ -166,17 +142,17 @@ class ModelConfigController(QMainWindow):
 
         # Check for early stop validity
         if early_stop > epoches:
-            self.show_error(text="Can not Insert Early Stop Epochs\nThat Bigger Than Training Epochs Number!",
-                            title="Input Error")
+            Utils.show_error(text="Can not Insert Early Stop Epochs\nThat Bigger Than Training Epochs Number!",
+                             title="Input Error")
             return
 
         # check for files validity
         try:
-            self.file_validation(embedding_file, 'Embedding')
-            self.file_validation(bot_file, 'Bot')
-            self.file_validation(human_file, 'Human')
+            Utils.file_validation(embedding_file, 'Embedding')
+            Utils.file_validation(bot_file, 'Bot')
+            Utils.file_validation(human_file, 'Human')
         except Exception as ex:
-            self.show_error(text=ex.args[0], title="Input Error")
+            Utils.show_error(text=ex.args[0], title="Input Error")
             return
 
         self.stop_requested = False;

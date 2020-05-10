@@ -1,0 +1,40 @@
+#lbl_title {
+font: 75 20pt "Microsoft YaHei UI";
+font-weight: bold;
+qproperty-alignment: AlignCenter;
+color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #3643f7, stop:1 #3643f7);
+}
+
+#btn_homepage {
+background: transparent;
+border-radius: 19px;
+}
+
+#btn_homepage::hover {
+background: #3f72af;
+}
+
+#btn_help {
+background: transparent;
+border-radius: 19px;
+}
+
+#btn_help::hover {
+background: #3f72af;
+}
+
+#btn_start, #btn_classify, #btn_save {
+font: 75 13pt "Microsoft YaHei UI";
+font-weight: bold;
+}
+
+QProgressBar:horizontal {
+border: 1px solid gray;
+border-radius: 3px;
+background: white;
+padding: 0px;
+}
+QProgressBar::chunk:horizontal {
+background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
+    stop: 0 #a8ff78, stop: 1 #78ffd6);
+}

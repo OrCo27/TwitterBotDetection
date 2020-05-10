@@ -71,7 +71,6 @@ class RankingModel:
         # Calculate numbers of hidden units
         hidden_units = self.no_conv_filters*2 + self.addit_feat_len + 1
 
-        # TODO: maybe need adding relu here too?
         hidden_layer = Dense(hidden_units,
                              kernel_regularizer=regularizers.l2(1e-4))(join_layer)
 

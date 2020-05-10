@@ -1,4 +1,6 @@
 from modelconfig import ModelConfigController
+from singleanalyzer import SingleAnalyzerController
+from multipleanalyzer import MultipleAnalyzerController
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QFile, QTextStream
 import ctypes
@@ -19,6 +21,8 @@ class MainWindowController(QMainWindow):
 
         # connect listeners
         self.ui.btn_config.clicked.connect(self.open_model_config_gui)
+        self.ui.btn_single.clicked.connect(self.open_single_analyzer_gui)
+        self.ui.btn_multi.clicked.connect(self.open_multiple_analyzer_gui)
 
     def _load_stylesheet(self):
         file = QFile('./css/MainWindow.qss')
@@ -34,6 +38,17 @@ class MainWindowController(QMainWindow):
         model_config = ModelConfigController(self)
         model_config.show()
         self.main.close()
+
+    def open_single_analyzer_gui(self):
+        single_analyzer = SingleAnalyzerController(self)
+        single_analyzer.show()
+        self.main.close()
+
+    def open_multiple_analyzer_gui(self):
+        multi_analyzer = MultipleAnalyzerController(self)
+        multi_analyzer.show()
+        self.main.close()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

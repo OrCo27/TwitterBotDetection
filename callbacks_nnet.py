@@ -1,9 +1,9 @@
 from tensorflow.keras.callbacks import Callback
 
 
-class CallBackNNet(Callback):
+class CallBackTrainNNet(Callback):
     def __init__(self, logger, conf_controller, check_exit_breakpoint):
-        super(CallBackNNet, self).__init__()
+        super(CallBackTrainNNet, self).__init__()
         self.logger = logger
         self.conf_controller = conf_controller
         self.check_exit_breakpoint = check_exit_breakpoint
@@ -97,10 +97,49 @@ class CallBackNNet(Callback):
         # stopping break - if there is a request - exit
         self.check_exit_breakpoint(exit_process=self.stop_train)
 
+
+class CallBackSinglePredictNNet(Callback):
+    def __init__(self, single_controller):
+        super(CallBackSinglePredictNNet, self).__init__()
+        self.single_controller = single_controller
+        self.batch_sum = 0
+
     def on_predict_begin(self, logs=None):
-        """ Called at the beginning of prediction """
-        pass
+        self.batch_sum = 0
 
     def on_predict_batch_end(self, batch, logs=None):
-        """ Called at the end of a batch in predict methods """
-        pass
+        # calculate batch percentage for progressbar
+        samples = self.params['samples']
+        self.batch_sum += logs['size']
+        batch_progress = (self.batch_sum / samples) * 100
+
+        # update progressbar
+        self.single_controller.ui.progressbar_batch.setValue(batch_progress)
+
+
+class CallBackMultiPredictNNet(Callback):
+    def __init__(self, multi_controller, rand_tweets):
+        super(CallBackMultiPredictNNet, self).__init__()
+        self.multi_controller = multi_controller
+        self.rand_tweets = rand_tweets
+        self.batch_sum = 0
+        self.tweets_num = 0
+
+    def on_predict_begin(self, logs=None):
+        self.batch_sum = 0
+
+    def on_predict_batch_end(self, batch, logs=None):
+        # calculate batch percentage for progressbar
+        samples = self.params['samples']
+        self.batch_sum += logs['size']
+        batch_progress = (self.batch_sum / samples) * 100
+
+        # update progressbar
+        self.multi_controller.ui.progressbar_batch.setValue(batch_progress)
+
+    def on_predict_end(self, logs=None):
+        self.tweets_num += 1
+        tweets_progress = (self.tweets_num / self.rand_tweets) * 100
+
+        # update progressbar
+        self.multi_controller.ui.progressbar_tweets.setValue(tweets_progress)

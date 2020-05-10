@@ -1,7 +1,12 @@
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import string
 import re
+import os
 import numpy as np
+
 
 class ModelCommon:
     @staticmethod
@@ -15,7 +20,6 @@ class ModelCommon:
 
             overlap = float(len(word_overlap)) / (len(q_set) + len(a_set))
 
-            # TODO: adding TF-IDF scoring to addit_feature vector and check if get higher accuracy?
             feats_overlap.append(np.array([overlap]))
 
         return np.array(feats_overlap)
@@ -70,3 +74,29 @@ class ModelCommon:
         query_set = set(map(tuple, text_list))
         unique_list = list(map(list, query_set))
         return unique_list
+
+    @staticmethod
+    def file_validation(file_path, file_type):
+        if (file_path is None) or (not file_path):
+            raise Exception(f'{file_type} File Path is Empty!\nPlease Select a File For Starting a New Training.')
+
+        file_exists = os.path.isfile(file_path)
+        file_name = os.path.basename(file_path)
+        if not file_exists:
+            raise Exception(f'The {file_type} File: \'{file_name}\' is Not Exists!\nPlease Select Another One.')
+        elif os.stat(file_path).st_size == 0:
+            raise Exception(f'The {file_type} File: \'{file_name}\' is Empty!\nPlease Select Another One.')
+
+    @staticmethod
+    def show_error(text, title):
+        frm = QMessageBox()
+        frm.setIcon(QMessageBox.Critical)
+        frm.setWindowTitle(title)
+        frm.setText(text)
+        frm.setStandardButtons(QMessageBox.Ok)
+
+        icon = QIcon()
+        icon.addPixmap(QPixmap(":/images/icon.png"), QIcon.Normal, QIcon.Off)
+        frm.setWindowIcon(icon)
+
+        frm.exec_()

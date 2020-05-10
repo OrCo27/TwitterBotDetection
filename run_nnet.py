@@ -1,5 +1,6 @@
 from utils_nnet import ModelCommon as utils
 from tensorflow.keras.models import load_model
+from threading import Thread
 import numpy as np
 import os
 import pickle
@@ -8,8 +9,9 @@ import random
 
 
 class SinglePredictor:
-    def __init__(self, model_name):
+    def __init__(self, model_name, callback_predict):
         self.model_name = model_name
+        self.callback_predict = callback_predict
         # load model parameters
         self.model = None
         self.tokenizer = None
@@ -40,7 +42,8 @@ class SinglePredictor:
         else:
             additional_feat = np.zeros(len(self.bot_list))
 
-        predict_list = self.model.predict([self.x_bot_list, x_doc_list, additional_feat], verbose=1)
+        predict_list = self.model.predict([self.x_bot_list, x_doc_list, additional_feat],
+                                          verbose=1, callbacks=[self.callback_predict])
 
         bot_similarity_score = len(list(filter(lambda x: x > 0.5, predict_list)))/len(predict_list)
 
@@ -64,8 +67,8 @@ class SinglePredictor:
 
 
 class MultiPredictor(SinglePredictor):
-    def __init__(self, model_name):
-        super().__init__(model_name)
+    def __init__(self, model_name, callback_predict):
+        super().__init__(model_name, callback_predict)
         self.tweets_text_list = [] # original tweets text
         self.tweets_preds_list = [] # predicts score for each tweet
         self.tweets_bot_class = [] # 1 for bot, 0 for human
@@ -94,6 +97,8 @@ class MultiPredictor(SinglePredictor):
     def predict(self, take_random_tweets=150):
         if len(self.tweets_text_list) > take_random_tweets:
             self.tweets_text_list = random.sample(self.tweets_text_list, take_random_tweets)
+        else:
+            raise Exception('The Random Tweets you Choose is Bigger Than Number of Tweets in File!')
 
         for tweet in self.tweets_text_list:
             sim_bot_score = super().predict(tweet)
@@ -110,3 +115,39 @@ class MultiPredictor(SinglePredictor):
     def get_bots_distribution(self):
         bot_distribution = len(list(filter(lambda x: x == 1, self.tweets_bot_class))) / len(self.tweets_bot_class)
         return bot_distribution
+
+
+class ModelSinglePredictorThread(Thread):
+    def __init__(self, predictor, tweet_text, single_controller):
+        super().__init__()
+        self.predictor = predictor
+        self.tweet_text = tweet_text
+        self.single_controller = single_controller
+
+    def run(self):
+        self.predictor.load_model()
+        bot_score = self.predictor.predict(self.tweet_text)
+        rounded_score = int(round(bot_score * 100))
+        self.single_controller.ui.lbl_result.setText(f'The Tweet is a Bot With Probability of {rounded_score}%')
+        self.single_controller.ui.btn_start.setDisabled(False)
+
+
+class ModelMultiplePredictorThread(Thread):
+    def __init__(self, predictor, tweet_file, header_ignore, random_tweets, multi_controller):
+        super().__init__()
+        self.predictor = predictor
+        self.tweet_file = tweet_file
+        self.header_ignore = header_ignore
+        self.random_tweets = random_tweets
+        self.multi_controller = multi_controller
+
+    def run(self):
+        #TODO: add catch exception for overflowing random tweets
+        self.predictor.load_model()
+        self.predictor.load_file_content(tweet_file=self.tweet_file, ignore_header=self.header_ignore)
+        self.predictor.predict(take_random_tweets=self.random_tweets)
+        self.multi_controller.classify_tweets()
+
+        self.multi_controller.ui.btn_start.setDisabled(False)
+        self.multi_controller.ui.btn_classify.setDisabled(False)
+        self.multi_controller.ui.btn_save.setDisabled(False)

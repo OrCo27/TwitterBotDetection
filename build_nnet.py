@@ -11,7 +11,7 @@ import os
 import pickle
 from os import path
 from embedding import Embedding
-from callbacks_nnet import CallBackNNet
+from callbacks_nnet import CallBackTrainNNet
 import sys
 
 
@@ -19,8 +19,8 @@ class ModelTrainer:
     def __init__(self, logger=Log(print), embedding_file='data/wiki-news-300d-1M.vec',
                  bots_file='data/bots_tweets.txt', human_file='data/human_tweets.txt',
                  validation_split=0.2, test_split=0.2, batch_size=50, epochs=25,
-                 additional_feats_enabled=True, config_controller=None, early_stopping=5,
-                 dataset_config=DatasetConfig.USER_STATE):
+                 additional_feats_enabled=True, config_controller=None,
+                 early_stopping=5, dataset_config=DatasetConfig.USER_STATE):
 
         self.config_controller = config_controller
         self.dataset = DatasetBuilder(logger, self.check_exit_breakpoint, dataset_config)
@@ -160,7 +160,7 @@ class ModelTrainer:
                                    mode='auto',
                                    restore_best_weights=True)
 
-        custom_callback = CallBackNNet(self.logger, self.config_controller, self.check_exit_breakpoint)
+        custom_callback = CallBackTrainNNet(self.logger, self.config_controller, self.check_exit_breakpoint)
 
         return [early_stop, custom_callback]
 
@@ -201,6 +201,7 @@ class ModelTrainer:
                          self.dataset.max_text_len, self.additional_feats_enabled], f)
 
         self.logger.write_log('Model Saved Successfully')
+
 
 class ModelTrainerThread(Thread):
     def __init__(self, model_train):
