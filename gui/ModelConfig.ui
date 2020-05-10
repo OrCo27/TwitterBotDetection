@@ -576,7 +576,7 @@ background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
                 </size>
                </property>
                <property name="minimum">
-                <number>0</number>
+                <number>5</number>
                </property>
                <property name="maximum">
                 <number>100</number>
@@ -616,7 +616,7 @@ background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
                 </size>
                </property>
                <property name="minimum">
-                <number>0</number>
+                <number>5</number>
                </property>
                <property name="maximum">
                 <number>100</number>
