@@ -40,8 +40,8 @@ class ModelConfigController(QMainWindow):
 
         # create two lines for train and val for each epoch graphs
         # key-> train/val, value-> line
-        self.acc_epoch_lines = self.create_train_val_lines(self.ui.graph_acc_epoch, legend_offset=(53, 30))
-        self.loss_epoch_lines = self.create_train_val_lines(self.ui.graph_loss_epoch, legend_offset=(-3, 30))
+        self.acc_epoch_lines = self._create_train_val_lines(self.ui.graph_acc_epoch, legend_offset=(53, 30))
+        self.loss_epoch_lines = self._create_train_val_lines(self.ui.graph_loss_epoch, legend_offset=(-3, 30))
 
         # combined all graphs signals into a dictionary
         self.draw_graphs = {
@@ -63,7 +63,7 @@ class ModelConfigController(QMainWindow):
         self.model_thread = None
 
         # set log method for writing to log textbox
-        self.log = Log(self.write_log_text)
+        self.log = Log(self.write_log_text.emit)
 
         # initialize default paths
         self.ui.textbox_embed.setText('C:/Users/אור כהן/PycharmProjects/TwitterBotDetection/data/glove.twitter.27B.200d.txt')
@@ -114,7 +114,7 @@ class ModelConfigController(QMainWindow):
     def get_status_stopped(self):
         return self.stop_requested
 
-    def create_train_val_lines(self, graph, legend_offset):
+    def _create_train_val_lines(self, graph, legend_offset):
         line_train = pg.PlotCurveItem(clear=True, pen=pg.mkPen('r', width=2))
         line_val = pg.PlotCurveItem(clear=True, pen=pg.mkPen('g', width=2))
 
@@ -197,8 +197,9 @@ class ModelConfigController(QMainWindow):
         self.log.write_log("Start pre-training phase...")
 
         # create model instance with all parameters
-        self.custom_callback = CallBackTrainNNet(self.write_log_text, self.draw_graphs, self.batch_graphs_clear,
+        self.custom_callback = CallBackTrainNNet(self.log, self.draw_graphs, self.batch_graphs_clear,
                                                  self.update_progressbars, self.get_status_stopped)
+
         self.model = ModelTrainer(logger=self.log, embedding_file=embedding_file, bots_file=bot_file,
                                   human_file=human_file, validation_split=val_split, test_split=test_split,
                                   batch_size=batch_size, epochs=epoches, additional_feats_enabled=addit_feat_enabled,
@@ -240,6 +241,8 @@ class ModelConfigController(QMainWindow):
             if self.model_thread.isRunning():
                 if not self.custom_callback.train_started:
                     self.model_thread.terminate()
+                else:
+                    self.custom_callback.stop_train()
 
     def _all_graphs_init(self):
         pg.setConfigOption("antialias", True)

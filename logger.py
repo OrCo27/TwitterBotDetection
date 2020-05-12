@@ -11,20 +11,16 @@ class Log:
     def enable_log(self):
         self.disabled = False
 
-    def write_log(self, description, title=None, timestamp=True):
+    def write_log(self, description, title=None):
         if self.disabled:
             return
 
         named_tuple = time.localtime()  # get struct_time
-
-        if timestamp:
-            time_string = time.strftime("[%m/%d/%Y %H:%M:%S] -", named_tuple)
-        else:
-            time_string = ""
+        time_string = time.strftime("[%m/%d/%Y %H:%M:%S] -", named_tuple)
 
         if title is not None:
             line_log = str.format(f'-- {time_string} [{title.upper()}] - {description}')
         else:
             line_log = str.format(f'-- {time_string} {description}')
 
-        self.log_method.emit(line_log)
+        self.log_method(line_log)

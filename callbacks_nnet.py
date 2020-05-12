@@ -3,9 +3,9 @@ import time
 
 
 class CallBackTrainNNet(Callback):
-    def __init__(self, write_log, draw_graphs, clear_batch_graphs, update_progressbars, need_stop):
+    def __init__(self, log, draw_graphs, clear_batch_graphs, update_progressbars, need_stop):
         super(CallBackTrainNNet, self).__init__()
-        self.write_log = write_log
+        self.log = log
         self.draw_graphs = draw_graphs
         self.clear_batch_graphs = clear_batch_graphs
         self.update_progressbars = update_progressbars
@@ -30,6 +30,9 @@ class CallBackTrainNNet(Callback):
 
     def on_epoch_begin(self, epoch, logs=None):
         """ Called at the start of an epoch """
+        if self.need_stop():
+            return
+
         self.batch_cnt = 0
         self.batch_sum = 0
         self.arr_batch_index = [0]
@@ -39,6 +42,9 @@ class CallBackTrainNNet(Callback):
 
     def on_epoch_end(self, batch, logs={}):
         # extract parameters about current epoch
+        if self.need_stop():
+            return
+
         loss = logs['loss']
         acc = logs['accuracy']
         val_loss = logs['val_loss']
@@ -58,8 +64,8 @@ class CallBackTrainNNet(Callback):
 
         # update progressbar and logs
         self.update_progressbars['EPOCH'].emit(epoch_progress)
-        self.write_log.emit(f'Epoch {self.epoch_cnt}/{epochs} | loss: {loss:.4f} - accuracy: '
-                            f'{acc:.4f} - val_loss: {val_loss:.4f} - val_accuracy: {val_acc:.4f}')
+        self.log.write_log(f'Epoch {self.epoch_cnt}/{epochs} | loss: {loss:.4f} - accuracy: '
+                           f'{acc:.4f} - val_loss: {val_loss:.4f} - val_accuracy: {val_acc:.4f}')
 
         # update epoch graphs
         self.draw_graphs['EPOCH_ACC'].emit(self.arr_epoch_index, self.arr_epoch_acc['train'],
@@ -70,6 +76,9 @@ class CallBackTrainNNet(Callback):
 
     def on_batch_end(self, batch, logs=None):
         # extract parameters about current epoch
+        if self.need_stop():
+            return
+
         loss = logs['loss']
         acc = logs['accuracy']
         batch_size = logs['size']
@@ -98,9 +107,8 @@ class CallBackTrainNNet(Callback):
         self.draw_graphs['BATCH_LOSS'].emit(self.arr_batch_index, self.arr_batch_loss)
 
     def on_batch_begin(self, batch, logs=None):
-        if self.need_stop():
-            self.model.stop_training = True
-
+        pass
+        #self.stop_train()
 
 class CallBackSinglePredictNNet(Callback):
     def __init__(self, single_controller):
