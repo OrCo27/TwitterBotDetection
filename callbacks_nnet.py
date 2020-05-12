@@ -106,9 +106,6 @@ class CallBackTrainNNet(Callback):
         self.draw_graphs['BATCH_ACC'].emit(self.arr_batch_index, self.arr_batch_acc)
         self.draw_graphs['BATCH_LOSS'].emit(self.arr_batch_index, self.arr_batch_loss)
 
-    def on_batch_begin(self, batch, logs=None):
-        pass
-        #self.stop_train()
 
 class CallBackSinglePredictNNet(Callback):
     def __init__(self, single_controller):
