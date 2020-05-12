@@ -27,4 +27,4 @@ class Log:
         else:
             line_log = str.format(f'-- {time_string} {description}')
 
-        self.log_method(line_log)
+        self.log_method.emit(line_log)

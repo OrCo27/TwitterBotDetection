@@ -1,4 +1,4 @@
-from utils_nnet import ModelCommon as utils
+from utils_nnet import ModelCommon as Utils
 from tensorflow.keras.preprocessing.text import Tokenizer
 import numpy as np
 import random
@@ -12,8 +12,7 @@ class DatasetConfig:
 
 
 class DatasetBuilder:
-    def __init__(self, logger, check_exit_breakpoint, dataset_config=DatasetConfig.USER_STATE):
-        self.check_exit_breakpoint = check_exit_breakpoint
+    def __init__(self, logger, dataset_config=DatasetConfig.USER_STATE):
         self.tokenizer = Tokenizer()
         self.logger = logger
         self.config_id, self.config_name = dataset_config
@@ -79,7 +78,7 @@ class DatasetBuilder:
         curr_user = None
         users_dict = {}  # dictionary of lists
         for line in query_file:
-            user = utils.get_user_from_tweet(line)
+            user = Utils.get_user_from_tweet(line)
 
             if user is not None:  # found tweet with username
                 curr_user = user
@@ -96,8 +95,8 @@ class DatasetBuilder:
 
     # performing pre-processing and return if there length are valid
     def _perform_pre_processing(self, bot_tweet, doc_tweet, length_valid=3):
-        bot_tweet = utils.preprocess_tweet(bot_tweet)
-        doc_tweet = utils.preprocess_tweet(doc_tweet)
+        bot_tweet = Utils.preprocess_tweet(bot_tweet)
+        doc_tweet = Utils.preprocess_tweet(doc_tweet)
         length_valid = True \
             if (len(bot_tweet) >= length_valid and len(doc_tweet) >= length_valid) \
             else False
@@ -113,9 +112,6 @@ class DatasetBuilder:
         final_labels = []
 
         for user in users_dict:
-            # stopping break - if there is a request - exit
-            self.check_exit_breakpoint()
-
             items_count = len(users_dict[user])
             # current user have only one tweet, pair to random human tweet
             if items_count == 1:
@@ -164,7 +160,7 @@ class DatasetBuilder:
     def _generate_additional_feats(self, query_list, doc_list, additional_feats_enabled):
         if additional_feats_enabled:
             self.logger.write_log(f'Building additional features between queries and documents')
-            self.overlap_feats = utils.compute_overlap_features(query_list, doc_list)
+            self.overlap_feats = Utils.compute_overlap_features(query_list, doc_list)
         else:
             self.logger.write_log(f'Additional features disabled - building not needed')
             self.overlap_feats = np.zeros(len(query_list))
@@ -194,9 +190,6 @@ class DatasetBuilder:
         # and else it will get label=0 (different)
         final_bots, final_docs, final_labels = [], [], []
         for i in range(len(query_list)):
-            # stopping break - if there is a request - exit
-            self.check_exit_breakpoint()
-
             # select a random pair from the collection
             rand_doc = random.choice(pairs_mixed)
             doc_tweet, label = rand_doc

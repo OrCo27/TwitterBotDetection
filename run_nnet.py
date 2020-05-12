@@ -1,4 +1,4 @@
-from utils_nnet import ModelCommon as utils
+from utils_nnet import ModelCommon as Utils
 from tensorflow.keras.models import load_model
 from threading import Thread
 import numpy as np
@@ -23,14 +23,14 @@ class SinglePredictor:
     # predict bot similarity score on a single tweet
     def predict(self, tweet_pred):
         # perform pre-processing
-        clean_tweet_pred = utils.preprocess_tweet(tweet_pred)
+        clean_tweet_pred = Utils.preprocess_tweet(tweet_pred)
 
         # build doc list by duplicate tweet prediction foreach line in bot list
         tweet_pred_list = [clean_tweet_pred] * len(self.bot_list)
 
         # convert tweet predicted to sequence
         temp_pred_list = [clean_tweet_pred]
-        x_temp_pred_list = utils.convert_text_to_sequences(self.tokenizer, temp_pred_list, self.max_text_len)
+        x_temp_pred_list = Utils.convert_text_to_sequences(self.tokenizer, temp_pred_list, self.max_text_len)
 
         # duplicate sequence to the length of bot size list
         x_doc_list = [x_temp_pred_list[0]] * len(self.bot_list)
@@ -38,7 +38,7 @@ class SinglePredictor:
 
         # calculate word overlapping additional feature
         if self.additional_feats_enabled:
-            additional_feat = utils.compute_overlap_features(self.bot_list, tweet_pred_list)
+            additional_feat = Utils.compute_overlap_features(self.bot_list, tweet_pred_list)
         else:
             additional_feat = np.zeros(len(self.bot_list))
 

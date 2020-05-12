@@ -1,12 +1,15 @@
 from tensorflow.keras.callbacks import Callback
+import time
 
 
 class CallBackTrainNNet(Callback):
-    def __init__(self, logger, conf_controller, check_exit_breakpoint):
+    def __init__(self, write_log, draw_graphs, clear_batch_graphs, update_progressbars, need_stop):
         super(CallBackTrainNNet, self).__init__()
-        self.logger = logger
-        self.conf_controller = conf_controller
-        self.check_exit_breakpoint = check_exit_breakpoint
+        self.write_log = write_log
+        self.draw_graphs = draw_graphs
+        self.clear_batch_graphs = clear_batch_graphs
+        self.update_progressbars = update_progressbars
+        self.need_stop = need_stop
         self.batch_sum = 0
         self.batch_cnt = 0
         self.epoch_cnt = 0
@@ -16,9 +19,14 @@ class CallBackTrainNNet(Callback):
         self.arr_epoch_loss = {'train': [1], 'val': [1]}
         self.arr_batch_acc = [0]
         self.arr_batch_loss = [1]
+        self.train_started = False
+        self.need_stop = need_stop
 
     def stop_train(self):
         self.model.stop_training = True
+
+    def on_train_begin(self, logs=None):
+        self.train_started = True
 
     def on_epoch_begin(self, epoch, logs=None):
         """ Called at the start of an epoch """
@@ -27,11 +35,9 @@ class CallBackTrainNNet(Callback):
         self.arr_batch_index = [0]
         self.arr_batch_acc = [self.arr_batch_acc[-1]]
         self.arr_batch_loss = [self.arr_batch_loss[-1]]
+        self.clear_batch_graphs.emit()
 
     def on_epoch_end(self, batch, logs={}):
-        if self.conf_controller.is_stopped():
-            return
-
         # extract parameters about current epoch
         loss = logs['loss']
         acc = logs['accuracy']
@@ -51,30 +57,31 @@ class CallBackTrainNNet(Callback):
         self.arr_epoch_loss['val'].append(val_loss)
 
         # update progressbar and logs
-        self.conf_controller.ui.progressbar_epoches.setValue(epoch_progress)
-        self.conf_controller.log.write_log(f'Epoch {self.epoch_cnt}/{epochs} | loss: {loss:.4f} - accuracy: '
-                                           f'{acc:.4f} - val_loss: {val_loss:.4f} - val_accuracy: {val_acc:.4f}')
+        self.update_progressbars['EPOCH'].emit(epoch_progress)
+        self.write_log.emit(f'Epoch {self.epoch_cnt}/{epochs} | loss: {loss:.4f} - accuracy: '
+                            f'{acc:.4f} - val_loss: {val_loss:.4f} - val_accuracy: {val_acc:.4f}')
 
         # update epoch graphs
-        self.conf_controller.plot_epoch_acc(self.arr_epoch_index, self.arr_epoch_acc['train'],
-                                            self.arr_epoch_index, self.arr_epoch_acc['val'])
+        self.draw_graphs['EPOCH_ACC'].emit(self.arr_epoch_index, self.arr_epoch_acc['train'],
+                                           self.arr_epoch_index, self.arr_epoch_acc['val'])
 
-        self.conf_controller.plot_epoch_loss(self.arr_epoch_index, self.arr_epoch_loss['train'],
-                                             self.arr_epoch_index, self.arr_epoch_loss['val'])
+        self.draw_graphs['EPOCH_LOSS'].emit(self.arr_epoch_index, self.arr_epoch_loss['train'],
+                                            self.arr_epoch_index, self.arr_epoch_loss['val'])
 
-    def on_train_batch_end(self, batch, logs=None):
-        if self.conf_controller.is_stopped():
-            return
-
+    def on_batch_end(self, batch, logs=None):
         # extract parameters about current epoch
         loss = logs['loss']
         acc = logs['accuracy']
+        batch_size = logs['size']
         samples = self.params['samples']
 
         # calculate batch percentage for progressbar
-        self.batch_sum += logs['size']
+        self.batch_sum += batch_size
         batch_progress = (self.batch_sum / samples) * 100
         self.batch_cnt += 1
+
+        # update progressbar
+        self.update_progressbars['BATCH'].emit(batch_progress)
 
         self.arr_batch_index.append(self.batch_cnt)
 
@@ -86,16 +93,13 @@ class CallBackTrainNNet(Callback):
         self.arr_batch_acc.append(avg_acc)
         self.arr_batch_loss.append(avg_loss)
 
-        # update progressbar
-        self.conf_controller.ui.progressbar_batch.setValue(batch_progress)
-
         # update graphs
-        self.conf_controller.plot_batch_acc(self.arr_batch_index, self.arr_batch_acc)
-        self.conf_controller.plot_batch_loss(self.arr_batch_index, self.arr_batch_loss)
+        self.draw_graphs['BATCH_ACC'].emit(self.arr_batch_index, self.arr_batch_acc)
+        self.draw_graphs['BATCH_LOSS'].emit(self.arr_batch_index, self.arr_batch_loss)
 
-    def on_train_batch_begin(self, batch, logs=None):
-        # stopping break - if there is a request - exit
-        self.check_exit_breakpoint(exit_process=self.stop_train)
+    def on_batch_begin(self, batch, logs=None):
+        if self.need_stop():
+            self.model.stop_training = True
 
 
 class CallBackSinglePredictNNet(Callback):

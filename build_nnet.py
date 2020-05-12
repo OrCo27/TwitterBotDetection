@@ -1,17 +1,15 @@
-from utils_nnet import ModelCommon as utils
+from utils_nnet import ModelCommon as Utils
 from model import RankingModel
 from dataset_parser import DatasetBuilder, DatasetConfig
 from logger import Log
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
-from threading import Thread
 import os.path
 import numpy as np
 import os
 import pickle
 from os import path
 from embedding import Embedding
-from callbacks_nnet import CallBackTrainNNet
 import sys
 
 
@@ -19,13 +17,13 @@ class ModelTrainer:
     def __init__(self, logger=Log(print), embedding_file='data/wiki-news-300d-1M.vec',
                  bots_file='data/bots_tweets.txt', human_file='data/human_tweets.txt',
                  validation_split=0.2, test_split=0.2, batch_size=50, epochs=25,
-                 additional_feats_enabled=True, config_controller=None,
+                 additional_feats_enabled=True, custom_callback=None,
                  early_stopping=5, dataset_config=DatasetConfig.USER_STATE):
 
-        self.config_controller = config_controller
-        self.dataset = DatasetBuilder(logger, self.check_exit_breakpoint, dataset_config)
+        self.dataset = DatasetBuilder(logger, dataset_config)
         _,self.dataset_config_name = dataset_config
         self.logger = logger
+        self.custom_callback = custom_callback
         self.embedding = Embedding(logger, embedding_file)
         self.model = None  # initialize later
         self.additional_feats_enabled = additional_feats_enabled
@@ -49,17 +47,11 @@ class ModelTrainer:
         # build dataset for training
         self.dataset.perform_build(self.bots_file, self.human_file, self.additional_feats_enabled)
 
-        # stopping break - if there is a request - exit
-        self.check_exit_breakpoint()
-
         self.logger.write_log('Splitting datasets into train and test sets')
 
         data_train, data_test = self._split_train_test_sets()
         q_train, d_train, addn_feat_train, y_train = data_train
         q_test, d_test, addn_feat_test, y_test = data_test
-
-        # stopping break - if there is a request - exit
-        self.check_exit_breakpoint()
 
         self.logger.write_log(f'trains samples: {len(q_train)}')
         self.logger.write_log(f'test samples: {len(q_test)}')
@@ -72,17 +64,14 @@ class ModelTrainer:
 
         # convert texts to sequences
         self.logger.write_log('convert texts to sequences')
-        x_q_train = utils.convert_text_to_sequences(tokenizer, q_train, max_text_len)
-        x_d_train = utils.convert_text_to_sequences(tokenizer, d_train, max_text_len)
-        x_q_test = utils.convert_text_to_sequences(tokenizer, q_test, max_text_len)
-        x_d_test = utils.convert_text_to_sequences(tokenizer, d_test, max_text_len)
-
-        # stopping break - if there is a request - exit
-        self.check_exit_breakpoint()
+        x_q_train = Utils.convert_text_to_sequences(tokenizer, q_train, max_text_len)
+        x_d_train = Utils.convert_text_to_sequences(tokenizer, d_train, max_text_len)
+        x_q_test = Utils.convert_text_to_sequences(tokenizer, q_test, max_text_len)
+        x_d_test = Utils.convert_text_to_sequences(tokenizer, d_test, max_text_len)
 
         # prepare data for predicting
         self.bot_tweets = self._get_unique_matches(q_train, y_train)
-        self.x_bot_tweets = utils.convert_text_to_sequences(tokenizer, self.bot_tweets, max_text_len)
+        self.x_bot_tweets = Utils.convert_text_to_sequences(tokenizer, self.bot_tweets, max_text_len)
 
         self.bot_test_tweets = q_test
         self.doc_test_tweets = d_test
@@ -93,9 +82,6 @@ class ModelTrainer:
 
         self.logger.write_log(f'Start training process..')
 
-        # stopping break - if there is a request - exit
-        self.check_exit_breakpoint()
-
         # start fitting model
         history = self.model.fit([np.array(x_q_train), np.array(x_d_train), np.array(addn_feat_train)],
                                  np.array(y_train),
@@ -105,9 +91,6 @@ class ModelTrainer:
                                  validation_split=self.validation_split,
                                  callbacks=self._get_callbacks())
 
-        # stopping break - if there is a request - exit
-        self.check_exit_breakpoint()
-
         # self.logger.write_log(f'Start evaluating our model on test set', 'evaluate')
         #
         # # evaluate the model with test-set
@@ -116,24 +99,11 @@ class ModelTrainer:
         #
         # self.logger.write_log(f'test loss={result[0]:.4f}, test accuracy={result[1]:.4f}', 'evaluate')
 
-        self.logger.write_log('Training Process Completed Successfully!')
-
-        self.config_controller.change_widgets_disabled(False)
-        self.config_controller.ui.btn_save.setDisabled(False)
-
-    # stopping break - if there is a request - exit
-    def check_exit_breakpoint(self, exit_process=lambda: sys.exit()):
-        if self.config_controller.is_stopped():
-            self.logger.enable_log()
-            self.logger.write_log('Stopped Process Done Successfully!')
-            self.config_controller.change_widgets_disabled(False)
-            exit_process()
-
     def _get_unique_matches(self, query_train, label_train):
         lst = list(zip(query_train, label_train))
         lst_matches = list(filter(lambda x: x[1] == 1, lst))
         bot_matches, _ = list(map(list, zip(*lst_matches)))
-        unique_matches = utils.remove_duplicates(bot_matches)
+        unique_matches = Utils.remove_duplicates(bot_matches)
         return unique_matches
 
     def _split_train_test_sets(self):
@@ -160,9 +130,7 @@ class ModelTrainer:
                                    mode='auto',
                                    restore_best_weights=True)
 
-        custom_callback = CallBackTrainNNet(self.logger, self.config_controller, self.check_exit_breakpoint)
-
-        return [early_stop, custom_callback]
+        return [early_stop, self.custom_callback]
 
     def _create_model(self, vocabulary, max_text_len, addit_feat_len):
         # load embedding matrix
@@ -202,11 +170,3 @@ class ModelTrainer:
 
         self.logger.write_log('Model Saved Successfully')
 
-
-class ModelTrainerThread(Thread):
-    def __init__(self, model_train):
-        super().__init__()
-        self.model_train = model_train
-
-    def run(self):
-        self.model_train.train_model()

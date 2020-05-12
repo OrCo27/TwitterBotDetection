@@ -60,7 +60,7 @@ class SingleAnalyzerController(QMainWindow):
         self.ui.progressbar_batch.setValue(0)
         self.ui.lbl_result.setText('The Tweet is a Bot With Probability of 0%')
 
-        model_callback = CallBackPredictNNet(self)
+        model_callback = CallBackSinglePredictNNet(self)
         predictor = SinglePredictor(model_name, model_callback)
 
         self.ui.btn_start.setDisabled(True)
