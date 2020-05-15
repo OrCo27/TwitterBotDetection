@@ -25,7 +25,7 @@ class ModelConfigController(QMainWindow):
     need_stop = pyqtSignal()
 
     # global batch size
-    MAX_BATCH = 1500
+    MAX_BATCH = 800
     MIN_BATCH = 0
 
     def __init__(self, parent=None):
