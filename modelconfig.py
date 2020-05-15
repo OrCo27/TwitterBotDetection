@@ -3,7 +3,6 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from utils_nnet import ModelCommon as Utils
 import sys
-import time
 import pyqtgraph as pg
 sys.path.append('gui/')
 from gui.modelconfig_ui import Ui_ModelConfig
@@ -16,15 +15,18 @@ from logger import Log
 class ModelConfigController(QMainWindow):
 
     # qt signals
-    draw_batch_loss = pyqtSignal(list, list)
-    draw_batch_acc = pyqtSignal(list, list)
-    draw_epoch_acc = pyqtSignal(list, list, list, list)
-    draw_epoch_loss = pyqtSignal(list, list, list, list)
+    draw_batch_graph = pyqtSignal(list, list, list)
+    draw_epoch_graph = pyqtSignal(list, list, list, list, list)
     batch_graphs_clear = pyqtSignal()
+    update_batch_range = pyqtSignal()
     update_epoch_progress = pyqtSignal(int)
     update_batch_progress = pyqtSignal(int)
     write_log_text = pyqtSignal(str)
     need_stop = pyqtSignal()
+
+    # global batch size
+    MAX_BATCH = 1500
+    MIN_BATCH = 0
 
     def __init__(self, parent=None):
         super(ModelConfigController, self).__init__(parent)
@@ -45,10 +47,8 @@ class ModelConfigController(QMainWindow):
 
         # combined all graphs signals into a dictionary
         self.draw_graphs = {
-            'BATCH_ACC': self.draw_batch_acc,
-            'BATCH_LOSS': self.draw_batch_loss,
-            'EPOCH_ACC': self.draw_epoch_acc,
-            'EPOCH_LOSS': self.draw_epoch_loss
+            'EPOCH': self.draw_epoch_graph,
+            'BATCH': self.draw_batch_graph
         }
 
         # combined progressbars signals into a dictionary
@@ -61,6 +61,9 @@ class ModelConfigController(QMainWindow):
         self.model = None
         self.custom_callback = None
         self.model_thread = None
+
+        self.max_batch_slide = self.MAX_BATCH
+        self.min_batch_slide = self.MIN_BATCH
 
         # set log method for writing to log textbox
         self.log = Log(self.write_log_text.emit)
@@ -82,11 +85,10 @@ class ModelConfigController(QMainWindow):
         self.ui.btn_save.clicked.connect(self.save_model)
 
         # connect qt signals
-        self.draw_batch_loss.connect(self.plot_batch_loss)
-        self.draw_batch_acc.connect(self.plot_batch_acc)
-        self.draw_epoch_loss.connect(self.plot_epoch_loss)
-        self.draw_epoch_acc.connect(self.plot_epoch_acc)
+        self.draw_batch_graph.connect(self.plot_batches)
+        self.draw_epoch_graph.connect(self.plot_epochs)
         self.batch_graphs_clear.connect(self.clear_batch_graphs)
+        self.update_batch_range.connect(self.update_range)
         self.update_epoch_progress.connect(self.ui.progressbar_epoches.setValue)
         self.update_batch_progress.connect(self.ui.progressbar_batch.setValue)
         self.write_log_text.connect(self.write_log)
@@ -143,10 +145,19 @@ class ModelConfigController(QMainWindow):
         self.ui.textbox_log.moveCursor(QTextCursor.End)
 
     def reset_graphs(self):
-        self.plot_batch_acc([0], [0])
-        self.plot_batch_loss([0], [0])
-        self.plot_epoch_acc([0], [0], [0], [0])
-        self.plot_epoch_loss([0], [0], [0], [0])
+        self.clear_epoch_graphs()
+        self.clear_batch_graphs()
+        # self.plot_batches([0], [0], [0])
+        # self.plot_epochs([0], [0], [0], [0], [0])
+
+    def update_range(self):
+        self.max_batch_slide += 1
+        self.min_batch_slide += 1
+        self._update_graphs_range(self.min_batch_slide, self.max_batch_slide)
+
+    def _update_graphs_range(self, min_val, max_val):
+        self.ui.graph_acc_batch.setRange(xRange=[min_val, max_val])
+        self.ui.graph_loss_batch.setRange(xRange=[min_val, max_val])
 
     def start_train(self):
         # get training parameters
@@ -198,7 +209,8 @@ class ModelConfigController(QMainWindow):
 
         # create model instance with all parameters
         self.custom_callback = CallBackTrainNNet(self.log, self.draw_graphs, self.batch_graphs_clear,
-                                                 self.update_progressbars, self.get_status_stopped)
+                                                 self.update_progressbars, self.get_status_stopped, self.MAX_BATCH,
+                                                 self.update_batch_range)
 
         self.model = ModelTrainer(logger=self.log, embedding_file=embedding_file, bots_file=bot_file,
                                   human_file=human_file, validation_split=val_split, test_split=test_split,
@@ -249,7 +261,7 @@ class ModelConfigController(QMainWindow):
         self._graph_init(self.ui.graph_acc_epoch, '<b>Accuracy Epoch</b>', 'Epoch Number<', 'Accuracy')
         self._graph_init(self.ui.graph_acc_batch, '<b>Accuracy Batch</b>', 'Batch Number', 'Accuracy')
         self._graph_init(self.ui.graph_loss_epoch, '<b>Loss Epoch</b>', 'Epoch Number', 'Loss Value')
-        self._graph_init( self.ui.graph_loss_batch, '<b>Loss Batch</b>', 'Batch Number', 'Loss Value')
+        self._graph_init(self.ui.graph_loss_batch, '<b>Loss Batch</b>', 'Batch Number', 'Loss Value')
 
     def _graph_init(self, graph, title, bottom_label, left_label):
         graph.setTitle(title)
@@ -258,24 +270,30 @@ class ModelConfigController(QMainWindow):
         graph.showGrid(x=True, y=True)
         graph.getAxis('bottom').enableAutoSIPrefix(False)
         graph.getAxis('left').enableAutoSIPrefix(False)
+        graph.setRange(yRange=[0, 1])
 
-    def plot_epoch_acc(self, x_train, y_train, x_val, y_val):
-        self.acc_epoch_lines['train'].setData(x_train, y_train)
-        self.acc_epoch_lines['val'].setData(x_val, y_val)
+    def plot_epochs(self, x_epoch, y_acc_train, y_acc_val, y_loss_train, y_loss_val):
+        self.acc_epoch_lines['train'].setData(x_epoch, y_acc_train)
+        self.acc_epoch_lines['val'].setData(x_epoch, y_acc_val)
 
-    def plot_epoch_loss(self, x_train, y_train, x_val, y_val):
-        self.loss_epoch_lines['train'].setData(x_train, y_train)
-        self.loss_epoch_lines['val'].setData(x_val, y_val)
+        self.loss_epoch_lines['train'].setData(x_epoch, y_loss_train)
+        self.loss_epoch_lines['val'].setData(x_epoch, y_loss_val)
+        QApplication.processEvents()
 
-    def plot_batch_acc(self, x, y):
-        self._plot_batch_graph(self.ui.graph_acc_batch, x, y)
+    def plot_batches(self, x_batch, y_acc, y_loss):
+        self._plot_batch_graph(self.ui.graph_acc_batch, x_batch, y_acc)
+        self._plot_batch_graph(self.ui.graph_loss_batch, x_batch, y_loss)
 
-    def plot_batch_loss(self, x, y):
-        self._plot_batch_graph(self.ui.graph_loss_batch, x, y)
+    def clear_epoch_graphs(self):
+        self.plot_epochs([0], [0], [0], [0], [0])
 
     def clear_batch_graphs(self):
         self.ui.graph_loss_batch.clear()
         self.ui.graph_acc_batch.clear()
+        self.min_batch_slide = self.MIN_BATCH
+        self.max_batch_slide = self.MAX_BATCH
+        self.ui.graph_loss_batch.enableAutoRange('x', True)
+        self.ui.graph_acc_batch.enableAutoRange('x', True)
 
     def _plot_batch_graph(self, graph, x, y):
         graph.clear()
