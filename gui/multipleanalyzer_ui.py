@@ -350,6 +350,7 @@ class Ui_MultipleAnalayzer(object):
         self.verticalGroupBox_5.setObjectName("verticalGroupBox_5")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.verticalGroupBox_5)
         self.verticalLayout_6.setContentsMargins(10, 5, 10, 10)
+        self.verticalLayout_6.setSpacing(13)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_10.setContentsMargins(-1, 0, -1, -1)

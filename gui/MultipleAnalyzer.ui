@@ -703,6 +703,9 @@ padding-right: 1px;
            <item>
             <widget class="QGroupBox" name="verticalGroupBox_5">
              <layout class="QVBoxLayout" name="verticalLayout_6">
+              <property name="spacing">
+               <number>13</number>
+              </property>
               <property name="leftMargin">
                <number>10</number>
               </property>
