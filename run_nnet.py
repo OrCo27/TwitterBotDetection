@@ -1,6 +1,6 @@
 from utils_nnet import ModelCommon as Utils
 from tensorflow.keras.models import load_model
-from threading import Thread
+from qtpy.QtCore import QThread
 import numpy as np
 import os
 import pickle
@@ -9,7 +9,7 @@ import random
 
 
 class SinglePredictor:
-    def __init__(self, model_name, callback_predict):
+    def __init__(self, model_name, callback_predict, tweet_pred=None):
         self.model_name = model_name
         self.callback_predict = callback_predict
         # load model parameters
@@ -19,11 +19,22 @@ class SinglePredictor:
         self.x_bot_list = []
         self.bot_list = []
         self.additional_feats_enabled = True
+        self.tweet_pred = tweet_pred
+        self.bot_similarity_score = 0
+
+    def set_single_tweet(self, tweet_pred):
+        self.tweet_pred = tweet_pred
+
+    def get_similarity_score(self):
+        return self.bot_similarity_score
 
     # predict bot similarity score on a single tweet
-    def predict(self, tweet_pred):
+    def predict(self):
+        if self.tweet_pred is None:
+            raise Exception('Can not Start Predicting without any Prediction Tweet!')
+
         # perform pre-processing
-        clean_tweet_pred = Utils.preprocess_tweet(tweet_pred)
+        clean_tweet_pred = Utils.preprocess_tweet(self.tweet_pred)
 
         # build doc list by duplicate tweet prediction foreach line in bot list
         tweet_pred_list = [clean_tweet_pred] * len(self.bot_list)
@@ -42,12 +53,12 @@ class SinglePredictor:
         else:
             additional_feat = np.zeros(len(self.bot_list))
 
+        # perform the prediction operation
         predict_list = self.model.predict([self.x_bot_list, x_doc_list, additional_feat],
                                           verbose=1, callbacks=[self.callback_predict])
 
-        bot_similarity_score = len(list(filter(lambda x: x > 0.5, predict_list)))/len(predict_list)
-
-        return bot_similarity_score
+        # calculate and save the how much current tweet similar to training bots list
+        self.bot_similarity_score = len(list(filter(lambda x: x > 0.5, predict_list))) / len(predict_list)
 
     def load_model(self):
         full_path = os.path.join('output', self.model_name)
@@ -67,41 +78,57 @@ class SinglePredictor:
 
 
 class MultiPredictor(SinglePredictor):
-    def __init__(self, model_name, callback_predict):
+    def __init__(self, model_name, callback_predict, tweet_file, ignore_header=False, take_random_tweets=150):
         super().__init__(model_name, callback_predict)
         self.tweets_text_list = [] # original tweets text
         self.tweets_preds_list = [] # predicts score for each tweet
         self.tweets_bot_class = [] # 1 for bot, 0 for human
+        self.tweet_file = tweet_file
+        self.ignore_header = ignore_header
+        self.take_random_tweets = take_random_tweets
 
     # loads txt and csv file
-    # NOTE: csv file must include only one column with tweet content
-    def load_file_content(self, tweet_file, ignore_header=False):
+    # NOTE: csv file must include in the first column the tweet content
+    def _load_file_content(self):
         tweets_list = []
 
-        if tweet_file.endswith('.txt'):
-            with open(tweet_file, 'r', encoding='utf-8') as f:
+        # case for txt file - read directly all lines
+        if self.tweet_file.endswith('.txt'):
+            with open(self.tweet_file, 'r', encoding='utf-8') as f:
                 tweets_list = f.readlines()
 
-        elif tweet_file.endswith('.csv'):
-            with open(tweet_file, 'r', encoding='utf-8') as file:
+        # case for csv file - read the first column as tweet content
+        elif self.tweet_file.endswith('.csv'):
+            with open(self.tweet_file, 'r', encoding='utf-8') as file:
                 reader = csv.reader(file)
                 for row in reader:
                     tweets_list.append(row[0])
 
-        if ignore_header:
+        if self.ignore_header:
             tweets_list.remove(tweets_list[0])
 
         self.tweets_text_list = tweets_list
 
     # predict multiple tweets from specific file
-    def predict(self, take_random_tweets=150):
-        if len(self.tweets_text_list) > take_random_tweets:
-            self.tweets_text_list = random.sample(self.tweets_text_list, take_random_tweets)
+    def predict(self):
+        # load tweets file
+        self._load_file_content()
+
+        # check for overflowing
+        if len(self.tweets_text_list) > self.take_random_tweets:
+            self.tweets_text_list = random.sample(self.tweets_text_list, self.take_random_tweets)
         else:
             raise Exception('The Random Tweets you Choose is Bigger Than Number of Tweets in File!')
 
+        # pass for each tweet in the file and perform predicting
         for tweet in self.tweets_text_list:
-            sim_bot_score = super().predict(tweet)
+            # set current tweet text for prediction
+            super().set_single_tweet(tweet)
+            # perform a single prediction for current tweet
+            super().predict()
+            # get the similarity score for current tweet
+            sim_bot_score = super().get_similarity_score()
+            # add the score to predictions list
             self.tweets_preds_list.append(sim_bot_score)
 
     def _check_if_bot(self, score, threshold):
@@ -117,37 +144,18 @@ class MultiPredictor(SinglePredictor):
         return bot_distribution
 
 
-class ModelSinglePredictorThread(Thread):
-    def __init__(self, predictor, tweet_text, single_controller):
-        super().__init__()
+class ModelPredictorThread(QThread):
+    def __init__(self, predictor, parent=None):
+        QThread.__init__(self, parent)
         self.predictor = predictor
-        self.tweet_text = tweet_text
-        self.single_controller = single_controller
+        self.error = None
+
+    def is_success(self):
+        return self.error is None
 
     def run(self):
-        self.predictor.load_model()
-        bot_score = self.predictor.predict(self.tweet_text)
-        rounded_score = int(round(bot_score * 100))
-        self.single_controller.ui.lbl_result.setText(f'The Tweet is a Bot With Probability of {rounded_score}%')
-        self.single_controller.ui.btn_start.setDisabled(False)
-
-
-class ModelMultiplePredictorThread(Thread):
-    def __init__(self, predictor, tweet_file, header_ignore, random_tweets, multi_controller):
-        super().__init__()
-        self.predictor = predictor
-        self.tweet_file = tweet_file
-        self.header_ignore = header_ignore
-        self.random_tweets = random_tweets
-        self.multi_controller = multi_controller
-
-    def run(self):
-        #TODO: add catch exception for overflowing random tweets
-        self.predictor.load_model()
-        self.predictor.load_file_content(tweet_file=self.tweet_file, ignore_header=self.header_ignore)
-        self.predictor.predict(take_random_tweets=self.random_tweets)
-        self.multi_controller.classify_tweets()
-
-        self.multi_controller.ui.btn_start.setDisabled(False)
-        self.multi_controller.ui.btn_classify.setDisabled(False)
-        self.multi_controller.ui.btn_save.setDisabled(False)
+        try:
+            self.predictor.load_model()
+            self.predictor.predict()
+        except Exception as ex:
+            self.error = ex.args[0]

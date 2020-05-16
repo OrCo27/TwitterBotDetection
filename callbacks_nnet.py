@@ -124,9 +124,9 @@ class CallBackTrainNNet(Callback):
 
 
 class CallBackSinglePredictNNet(Callback):
-    def __init__(self, single_controller):
+    def __init__(self, update_batch_progress):
         super(CallBackSinglePredictNNet, self).__init__()
-        self.single_controller = single_controller
+        self.update_batch_progress = update_batch_progress
         self.batch_sum = 0
 
     def on_predict_begin(self, logs=None):
@@ -139,32 +139,19 @@ class CallBackSinglePredictNNet(Callback):
         batch_progress = (self.batch_sum / samples) * 100
 
         # update progressbar
-        self.single_controller.ui.progressbar_batch.setValue(batch_progress)
+        self.update_batch_progress.emit(batch_progress)
 
 
-class CallBackMultiPredictNNet(Callback):
-    def __init__(self, multi_controller, rand_tweets):
-        super(CallBackMultiPredictNNet, self).__init__()
-        self.multi_controller = multi_controller
-        self.rand_tweets = rand_tweets
-        self.batch_sum = 0
+class CallBackMultiPredictNNet(CallBackSinglePredictNNet):
+    def __init__(self, update_batch_progress, update_tweets_progress, total_tweets):
+        super(CallBackMultiPredictNNet, self).__init__(update_batch_progress)
+        self.update_tweets_progress = update_tweets_progress
+        self.total_tweets = total_tweets
         self.tweets_num = 0
-
-    def on_predict_begin(self, logs=None):
-        self.batch_sum = 0
-
-    def on_predict_batch_end(self, batch, logs=None):
-        # calculate batch percentage for progressbar
-        samples = self.params['samples']
-        self.batch_sum += logs['size']
-        batch_progress = (self.batch_sum / samples) * 100
-
-        # update progressbar
-        self.multi_controller.ui.progressbar_batch.setValue(batch_progress)
 
     def on_predict_end(self, logs=None):
         self.tweets_num += 1
-        tweets_progress = (self.tweets_num / self.rand_tweets) * 100
+        tweets_progress = (self.tweets_num / self.total_tweets) * 100
 
         # update progressbar
-        self.multi_controller.ui.progressbar_tweets.setValue(tweets_progress)
+        self.update_tweets_progress.emit(tweets_progress)
