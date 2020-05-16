@@ -8,5 +8,11 @@
 	<file>../images/help.png</file>
 	<file>../images/icon.png</file>
 	<file>../images/export_excel.png</file>
+	<file>../images/arrow_down.png</file>
+	<file>../images/open_quotes.png</file>
+	<file>../images/close_quotes.png</file>
+	<file>../images/bot.png</file>
+	<file>../images/human.png</file>
+	<file>../images/predict.png</file>
   </qresource>
 </RCC>
