@@ -39,12 +39,26 @@ class Ui_ModelConfig(object):
 "#btn_help::hover {\n"
 "background: #3f72af;\n"
 "}\n"
-"\n"
-"#btn_start, #btn_stop, #btn_save {\n"
+"#btn_embed,#btn_bot, #btn_human {\n"
+"font: 75 11pt \"MS Shell Dialog 2\";\n"
+"border-radius: 0px;\n"
+"}\n"
+"QPushButton {\n"
 "font: 75 13pt \"Microsoft YaHei UI\";\n"
 "font-weight: bold;\n"
+"border-radius: 9px;\n"
+"border: 1px solid black;\n"
+"background-color: #f0f5f9;\n"
 "}\n"
-"\n"
+"QPushButton::disabled {\n"
+"background-color: #D3D3D3;\n"
+"}\n"
+"QPushButton::hover {\n"
+"background: #c9d6df;\n"
+"}\n"
+"QPushButton:pressed {\n"
+"background: #3f72af;\n"
+"}\n"
 "QSlider::groove:horizontal {\n"
 "border: 1px solid #bbb;\n"
 "background: white;\n"
@@ -111,7 +125,57 @@ class Ui_ModelConfig(object):
 "QProgressBar::chunk:horizontal {\n"
 "background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,\n"
 "    stop: 0 #a8ff78, stop: 1 #78ffd6);\n"
-"}")
+"}\n"
+"\n"
+"QComboBox {\n"
+"font: 75 9pt \"MS Shell Dlg 2\";\n"
+"color: #1F1F21;\n"
+" border: 1px solid gray;\n"
+" border-radius: 8px;\n"
+" min-width: 6em;\n"
+"padding-left: 8px;\n"
+"qproperty-alignment: AlignCenter;\n"
+"}\n"
+"QComboBox::hover {\n"
+" border: 1px solid blue;\n"
+"background: #f0f5f9;\n"
+"}\n"
+"/* QComboBox gets the \"on\" state when the popup is open */\n"
+"QComboBox:!editable:on, QComboBox::drop-down:editable:on {\n"
+"    color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,\n"
+"                                stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);\n"
+"}\n"
+"QComboBox:on {\n"
+"    borde-radius: 10px;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down {\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 25px;\n"
+"    border-left-width: 1px;\n"
+"    border-left-color: darkgray;\n"
+"    border-left-style: solid; /* just a single line */\n"
+"    border-top-right-radius: 10px; /* same radius as the QComboBox */\n"
+"    border-bottom-right-radius: 10px;\n"
+"}\n"
+"QComboBox QAbstractItemView {\n"
+"    border-radius: 10px;\n"
+"    background: white;\n"
+"    border: 1px solid gray;\n"
+"    box-shadow: transparent;\n"
+"    selection-background-color:lightblue;\n"
+"    color: #1F1F21;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"image: url(:/images/arrow_down.png);\n"
+"    width: 15px;\n"
+"    height: 15px;\n"
+"padding-right: 1px;\n"
+"}\n"
+"")
         self.verticalLayout_13 = QtWidgets.QVBoxLayout(ModelConfig)
         self.verticalLayout_13.setContentsMargins(-1, 5, -1, 8)
         self.verticalLayout_13.setSpacing(5)
@@ -200,8 +264,9 @@ class Ui_ModelConfig(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textbox_embed.sizePolicy().hasHeightForWidth())
         self.textbox_embed.setSizePolicy(sizePolicy)
-        self.textbox_embed.setMinimumSize(QtCore.QSize(200, 0))
+        self.textbox_embed.setMinimumSize(QtCore.QSize(0, 0))
         self.textbox_embed.setMaximumSize(QtCore.QSize(500, 16777215))
+        self.textbox_embed.setText("")
         self.textbox_embed.setObjectName("textbox_embed")
         self.verticalLayout_4.addWidget(self.textbox_embed)
         self.textbox_bot = QtWidgets.QLineEdit(self.groupbox_inputs)
@@ -210,7 +275,7 @@ class Ui_ModelConfig(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textbox_bot.sizePolicy().hasHeightForWidth())
         self.textbox_bot.setSizePolicy(sizePolicy)
-        self.textbox_bot.setMinimumSize(QtCore.QSize(200, 0))
+        self.textbox_bot.setMinimumSize(QtCore.QSize(0, 0))
         self.textbox_bot.setMaximumSize(QtCore.QSize(500, 16777215))
         self.textbox_bot.setObjectName("textbox_bot")
         self.verticalLayout_4.addWidget(self.textbox_bot)
@@ -220,7 +285,7 @@ class Ui_ModelConfig(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textbox_human.sizePolicy().hasHeightForWidth())
         self.textbox_human.setSizePolicy(sizePolicy)
-        self.textbox_human.setMinimumSize(QtCore.QSize(200, 0))
+        self.textbox_human.setMinimumSize(QtCore.QSize(0, 0))
         self.textbox_human.setMaximumSize(QtCore.QSize(500, 16777215))
         self.textbox_human.setObjectName("textbox_human")
         self.verticalLayout_4.addWidget(self.textbox_human)
@@ -340,8 +405,8 @@ class Ui_ModelConfig(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.combobox_gen_method.sizePolicy().hasHeightForWidth())
         self.combobox_gen_method.setSizePolicy(sizePolicy)
-        self.combobox_gen_method.setMinimumSize(QtCore.QSize(150, 0))
-        self.combobox_gen_method.setMaximumSize(QtCore.QSize(200, 16777215))
+        self.combobox_gen_method.setMinimumSize(QtCore.QSize(94, 22))
+        self.combobox_gen_method.setMaximumSize(QtCore.QSize(200, 22))
         self.combobox_gen_method.setObjectName("combobox_gen_method")
         self.combobox_gen_method.addItem("")
         self.combobox_gen_method.addItem("")
@@ -483,6 +548,7 @@ class Ui_ModelConfig(object):
         self.horizontalLayout_4.setSpacing(31)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.btn_start = QtWidgets.QPushButton(self.verticalFrame)
+        self.btn_start.setEnabled(True)
         self.btn_start.setMinimumSize(QtCore.QSize(0, 35))
         self.btn_start.setMaximumSize(QtCore.QSize(16777215, 35))
         icon3 = QtGui.QIcon()
