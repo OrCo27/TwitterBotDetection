@@ -1,7 +1,7 @@
-from run_nnet import ModelMultiplePredictorThread, MultiPredictor
+from run_nnet import MultiPredictor, ModelPredictorThread
 from callbacks_nnet import CallBackMultiPredictNNet
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import QFile, QTextStream
+from PyQt5.QtCore import QFile, QTextStream, pyqtSignal
 from utils_nnet import ModelCommon as Utils
 import os
 import sys
@@ -11,6 +11,10 @@ from gui.multipleanalyzer_ui import Ui_MultipleAnalayzer
 
 
 class MultipleAnalyzerController(QMainWindow):
+    # qt signals
+    update_tweet_progress = pyqtSignal(int)
+    update_batch_progress = pyqtSignal(int)
+
     def __init__(self, parent=None):
         super(MultipleAnalyzerController, self).__init__(parent)
         self.parent = parent
@@ -18,8 +22,11 @@ class MultipleAnalyzerController(QMainWindow):
         self.ui = Ui_MultipleAnalayzer()
         self.ui.setupUi(self.main)
         self._load_stylesheet()
+        self._center_on_screen()
         self.load_models_names()
+
         self.predictor = None
+        self.pred_thread = None
 
         # connect listeners
         self.ui.btn_homepage.clicked.connect(self.back_homepage)
@@ -28,12 +35,20 @@ class MultipleAnalyzerController(QMainWindow):
         self.ui.btn_classify.clicked.connect(self.classify_tweets)
         #TODO: add save button for export to excel
 
+        # connect signals
+        self.update_tweet_progress.connect(self.ui.progressbar_tweets.setValue)
+        self.update_batch_progress.connect(self.ui.progressbar_batch.setValue)
+
     def _load_stylesheet(self):
         file = QFile('./css/MultipleAnalyzer.qss')
         file.open(QFile.ReadOnly)
         stream = QTextStream(file)
         text = stream.readAll()
         self.main.setStyleSheet(text)
+
+    def _center_on_screen(self):
+        resolution = QDesktopWidget().screenGeometry()
+        self.main.move((resolution.width() / 2) - (self.main.frameSize().width() / 2), 10)
 
     def open_file(self):
         try:
@@ -88,9 +103,23 @@ class MultipleAnalyzerController(QMainWindow):
         self.ui.btn_classify.setDisabled(True)
         self.ui.btn_save.setDisabled(True)
 
-        model_callback = CallBackMultiPredictNNet(self, random_tweets)
-        self.predictor = MultiPredictor(model_name, model_callback)
+        model_callback = CallBackMultiPredictNNet(self.update_batch_progress, self.update_tweet_progress, random_tweets)
+        self.predictor = MultiPredictor(model_name, model_callback, tweets_file, header_included, random_tweets)
 
         # create a thread for predictor
-        pred_thread = ModelMultiplePredictorThread(self.predictor, tweets_file, header_included, random_tweets, self)
-        pred_thread.start()
+        self.pred_thread = ModelPredictorThread(self.predictor)
+        self.pred_thread.finished.connect(self.on_predict_finished)
+        self.pred_thread.start()
+
+    def on_predict_finished(self):
+        if self.pred_thread.is_success():
+            self.classify_tweets()
+        else:
+            Utils.show_error(text=self.pred_thread.error, title="Error")
+
+        self.ui.btn_start.setDisabled(False)
+        self.ui.btn_classify.setDisabled(False)
+        self.ui.btn_save.setDisabled(False)
+
+
+

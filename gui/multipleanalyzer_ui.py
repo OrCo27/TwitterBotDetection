@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MultipleAnalayzer(object):
     def setupUi(self, MultipleAnalayzer):
         MultipleAnalayzer.setObjectName("MultipleAnalayzer")
-        MultipleAnalayzer.resize(564, 581)
+        MultipleAnalayzer.resize(615, 679)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/images/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MultipleAnalayzer.setWindowIcon(icon)
@@ -40,9 +40,38 @@ class Ui_MultipleAnalayzer(object):
 "background: #3f72af;\n"
 "}\n"
 "\n"
-"#btn_start, #btn_classify, #btn_save {\n"
+"#btn_tweets_file {\n"
+"font: 75 11pt \"MS Shell Dialog 2\";\n"
+"border-radius: 0px;\n"
+"}\n"
+"\n"
+"#btn_classify,#btn_save {\n"
+"font: 75 11pt \"Microsoft YaHei UI\";\n"
+"font-weight: bold;\n"
+"}\n"
+"#lbl_threshold {\n"
+"font: 75 9pt \"Microsoft YaHei UI\";\n"
+"font-weight: bold;\n"
+"}\n"
+"#spinbox_threshold {\n"
+"font: 75 10pt \"Microsoft YaHei UI\";\n"
+"font-weight: bold;\n"
+"}\n"
+"QPushButton {\n"
 "font: 75 13pt \"Microsoft YaHei UI\";\n"
 "font-weight: bold;\n"
+"border-radius: 9px;\n"
+"border: 1px solid black;\n"
+"background-color: #f0f5f9;\n"
+"}\n"
+"QPushButton::disabled {\n"
+"background-color: #D3D3D3;\n"
+"}\n"
+"QPushButton::hover {\n"
+"background: #c9d6df;\n"
+"}\n"
+"QPushButton:pressed {\n"
+"background: #3f72af;\n"
 "}\n"
 "\n"
 "QProgressBar:horizontal {\n"
@@ -54,7 +83,58 @@ class Ui_MultipleAnalayzer(object):
 "QProgressBar::chunk:horizontal {\n"
 "background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,\n"
 "    stop: 0 #a8ff78, stop: 1 #78ffd6);\n"
-"}")
+"}\n"
+"\n"
+"QComboBox {\n"
+"font: 75 10.5pt \"Microsoft YaHei UI\";\n"
+"font-weight: bold;\n"
+"color: #1F1F21;\n"
+" border: 1px solid gray;\n"
+" border-radius: 10px;\n"
+" min-width: 6em;\n"
+"padding-left: 8px;\n"
+"qproperty-alignment: AlignCenter;\n"
+"}\n"
+"QComboBox::hover {\n"
+" border: 1px solid blue;\n"
+"background: #f0f5f9;\n"
+"}\n"
+"/* QComboBox gets the \"on\" state when the popup is open */\n"
+"QComboBox:!editable:on, QComboBox::drop-down:editable:on {\n"
+"    color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,\n"
+"                                stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);\n"
+"}\n"
+"QComboBox:on {\n"
+"    borde-radius: 10px;\n"
+"}\n"
+"\n"
+"QComboBox::drop-down {\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 25px;\n"
+"    border-left-width: 1px;\n"
+"    border-left-color: darkgray;\n"
+"    border-left-style: solid; /* just a single line */\n"
+"    border-top-right-radius: 10px; /* same radius as the QComboBox */\n"
+"    border-bottom-right-radius: 10px;\n"
+"}\n"
+"QComboBox QAbstractItemView {\n"
+"    border-radius: 10px;\n"
+"    background: white;\n"
+"    border: 1px solid gray;\n"
+"    box-shadow: transparent;\n"
+"    selection-background-color:lightblue;\n"
+"    color: #1F1F21;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow {\n"
+"image: url(:/images/arrow_down.png);\n"
+"    width: 15px;\n"
+"    height: 15px;\n"
+"padding-right: 1px;\n"
+"}\n"
+"")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(MultipleAnalayzer)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
@@ -90,74 +170,66 @@ class Ui_MultipleAnalayzer(object):
         self.horizontalLayout_11.addItem(spacerItem)
         self.verticalLayout_2.addLayout(self.horizontalLayout_11)
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_6.setContentsMargins(18, 26, 60, 18)
+        self.horizontalLayout_6.setContentsMargins(60, 19, 60, 10)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.label = QtWidgets.QLabel(MultipleAnalayzer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setObjectName("label")
-        self.horizontalLayout_6.addWidget(self.label)
         self.combobox_model = QtWidgets.QComboBox(MultipleAnalayzer)
+        self.combobox_model.setMaximumSize(QtCore.QSize(270, 16777215))
         self.combobox_model.setObjectName("combobox_model")
+        self.combobox_model.addItem("")
         self.horizontalLayout_6.addWidget(self.combobox_model)
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
-        self.groupbox_inputs = QtWidgets.QGroupBox(MultipleAnalayzer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.groupbox_inputs.sizePolicy().hasHeightForWidth())
-        self.groupbox_inputs.setSizePolicy(sizePolicy)
-        self.groupbox_inputs.setObjectName("groupbox_inputs")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.groupbox_inputs)
-        self.horizontalLayout_2.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.horizontalLayout_2.setContentsMargins(14, 7, 14, 11)
-        self.horizontalLayout_2.setSpacing(7)
+        self.horizontalGroupBox_3 = QtWidgets.QGroupBox(MultipleAnalayzer)
+        self.horizontalGroupBox_3.setObjectName("horizontalGroupBox_3")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalGroupBox_3)
+        self.horizontalLayout_2.setContentsMargins(6, 10, 6, 10)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setContentsMargins(-1, 0, 0, -1)
+        self.verticalLayout.setContentsMargins(-1, 0, -1, 0)
+        self.verticalLayout.setSpacing(12)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.label_2 = QtWidgets.QLabel(self.groupbox_inputs)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.label_2 = QtWidgets.QLabel(self.horizontalGroupBox_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
         self.label_2.setSizePolicy(sizePolicy)
         self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2)
-        self.label_3 = QtWidgets.QLabel(self.groupbox_inputs)
+        self.label_7 = QtWidgets.QLabel(self.horizontalGroupBox_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
+        self.label_7.setSizePolicy(sizePolicy)
+        self.label_7.setObjectName("label_7")
+        self.verticalLayout.addWidget(self.label_7)
+        self.label_3 = QtWidgets.QLabel(self.horizontalGroupBox_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+        self.label_3.setSizePolicy(sizePolicy)
         self.label_3.setObjectName("label_3")
         self.verticalLayout.addWidget(self.label_3)
         self.horizontalLayout_2.addLayout(self.verticalLayout)
-        self.verticalLayout_3 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_3.setContentsMargins(-1, -1, 0, -1)
-        self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.textbox_tweets_file = QtWidgets.QLineEdit(self.groupbox_inputs)
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_4.setContentsMargins(-1, 0, -1, -1)
+        self.verticalLayout_4.setSpacing(12)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setContentsMargins(-1, 0, -1, -1)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.textbox_tweets_file = QtWidgets.QLineEdit(self.horizontalGroupBox_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textbox_tweets_file.sizePolicy().hasHeightForWidth())
         self.textbox_tweets_file.setSizePolicy(sizePolicy)
-        self.textbox_tweets_file.setMinimumSize(QtCore.QSize(200, 0))
-        self.textbox_tweets_file.setMaximumSize(QtCore.QSize(500, 16777215))
+        self.textbox_tweets_file.setMinimumSize(QtCore.QSize(370, 0))
+        self.textbox_tweets_file.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.textbox_tweets_file.setObjectName("textbox_tweets_file")
-        self.verticalLayout_3.addWidget(self.textbox_tweets_file)
-        self.checkbox_header = QtWidgets.QCheckBox(self.groupbox_inputs)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.checkbox_header.sizePolicy().hasHeightForWidth())
-        self.checkbox_header.setSizePolicy(sizePolicy)
-        self.checkbox_header.setChecked(True)
-        self.checkbox_header.setObjectName("checkbox_header")
-        self.verticalLayout_3.addWidget(self.checkbox_header)
-        self.horizontalLayout_2.addLayout(self.verticalLayout_3)
-        self.verticalLayout_5 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_5.setContentsMargins(-1, 0, 0, -1)
-        self.verticalLayout_5.setObjectName("verticalLayout_5")
-        self.btn_tweets_file = QtWidgets.QPushButton(self.groupbox_inputs)
+        self.horizontalLayout.addWidget(self.textbox_tweets_file)
+        self.btn_tweets_file = QtWidgets.QPushButton(self.horizontalGroupBox_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -166,47 +238,14 @@ class Ui_MultipleAnalayzer(object):
         self.btn_tweets_file.setMinimumSize(QtCore.QSize(35, 0))
         self.btn_tweets_file.setMaximumSize(QtCore.QSize(35, 16777215))
         self.btn_tweets_file.setObjectName("btn_tweets_file")
-        self.verticalLayout_5.addWidget(self.btn_tweets_file)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 28, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        self.verticalLayout_5.addItem(spacerItem1)
-        self.horizontalLayout_2.addLayout(self.verticalLayout_5)
-        self.verticalLayout_2.addWidget(self.groupbox_inputs)
-        self.groupbox_trainparams = QtWidgets.QGroupBox(MultipleAnalayzer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.groupbox_trainparams.sizePolicy().hasHeightForWidth())
-        self.groupbox_trainparams.setSizePolicy(sizePolicy)
-        self.groupbox_trainparams.setMaximumSize(QtCore.QSize(16777215, 102))
-        self.groupbox_trainparams.setObjectName("groupbox_trainparams")
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.groupbox_trainparams)
-        self.horizontalLayout_3.setContentsMargins(14, 7, 14, 11)
-        self.horizontalLayout_3.setSpacing(7)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.verticalLayout_7 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_7.setSpacing(8)
-        self.verticalLayout_7.setObjectName("verticalLayout_7")
-        self.label_7 = QtWidgets.QLabel(self.groupbox_trainparams)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
-        self.label_7.setSizePolicy(sizePolicy)
-        self.label_7.setObjectName("label_7")
-        self.verticalLayout_7.addWidget(self.label_7)
-        self.label_8 = QtWidgets.QLabel(self.groupbox_trainparams)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
-        self.label_8.setSizePolicy(sizePolicy)
-        self.label_8.setObjectName("label_8")
-        self.verticalLayout_7.addWidget(self.label_8)
-        self.horizontalLayout_3.addLayout(self.verticalLayout_7)
-        self.verticalLayout_8 = QtWidgets.QVBoxLayout()
-        self.verticalLayout_8.setSpacing(8)
-        self.verticalLayout_8.setObjectName("verticalLayout_8")
-        self.spinbox_rand_tweets = QtWidgets.QSpinBox(self.groupbox_trainparams)
+        self.horizontalLayout.addWidget(self.btn_tweets_file)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem1)
+        self.verticalLayout_4.addLayout(self.horizontalLayout)
+        self.horizontalLayout_8 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_8.setContentsMargins(-1, 0, -1, -1)
+        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
+        self.spinbox_rand_tweets = QtWidgets.QSpinBox(self.horizontalGroupBox_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -218,10 +257,121 @@ class Ui_MultipleAnalayzer(object):
         self.spinbox_rand_tweets.setMaximum(9000)
         self.spinbox_rand_tweets.setProperty("value", 50)
         self.spinbox_rand_tweets.setObjectName("spinbox_rand_tweets")
-        self.verticalLayout_8.addWidget(self.spinbox_rand_tweets)
-        self.spinbox_threshold = QtWidgets.QDoubleSpinBox(self.groupbox_trainparams)
-        self.spinbox_threshold.setMinimumSize(QtCore.QSize(0, 20))
-        self.spinbox_threshold.setMaximumSize(QtCore.QSize(60, 20))
+        self.horizontalLayout_8.addWidget(self.spinbox_rand_tweets)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_8.addItem(spacerItem2)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_8)
+        self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_7.setContentsMargins(-1, 0, -1, -1)
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.checkbox_header = QtWidgets.QCheckBox(self.horizontalGroupBox_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.checkbox_header.sizePolicy().hasHeightForWidth())
+        self.checkbox_header.setSizePolicy(sizePolicy)
+        self.checkbox_header.setChecked(True)
+        self.checkbox_header.setObjectName("checkbox_header")
+        self.horizontalLayout_7.addWidget(self.checkbox_header)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_7.addItem(spacerItem3)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_7)
+        self.horizontalLayout_2.addLayout(self.verticalLayout_4)
+        self.verticalLayout_2.addWidget(self.horizontalGroupBox_3)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setContentsMargins(35, 7, 35, 7)
+        self.horizontalLayout_4.setSpacing(34)
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem4)
+        self.btn_start = QtWidgets.QPushButton(MultipleAnalayzer)
+        self.btn_start.setMinimumSize(QtCore.QSize(122, 40))
+        self.btn_start.setMaximumSize(QtCore.QSize(16777214, 40))
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(":/images/predict.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btn_start.setIcon(icon3)
+        self.btn_start.setIconSize(QtCore.QSize(35, 35))
+        self.btn_start.setObjectName("btn_start")
+        self.horizontalLayout_4.addWidget(self.btn_start)
+        self.btn_stop = QtWidgets.QPushButton(MultipleAnalayzer)
+        self.btn_stop.setEnabled(False)
+        self.btn_stop.setMinimumSize(QtCore.QSize(122, 40))
+        self.btn_stop.setMaximumSize(QtCore.QSize(16777215, 40))
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(":/images/stop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btn_stop.setIcon(icon4)
+        self.btn_stop.setIconSize(QtCore.QSize(30, 30))
+        self.btn_stop.setObjectName("btn_stop")
+        self.horizontalLayout_4.addWidget(self.btn_stop)
+        self.btn_save = QtWidgets.QPushButton(MultipleAnalayzer)
+        self.btn_save.setEnabled(False)
+        self.btn_save.setMinimumSize(QtCore.QSize(122, 40))
+        self.btn_save.setMaximumSize(QtCore.QSize(16777215, 40))
+        icon5 = QtGui.QIcon()
+        icon5.addPixmap(QtGui.QPixmap(":/images/export_excel.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btn_save.setIcon(icon5)
+        self.btn_save.setIconSize(QtCore.QSize(20, 20))
+        self.btn_save.setObjectName("btn_save")
+        self.horizontalLayout_4.addWidget(self.btn_save)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem5)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
+        self.horizontalGroupBox_31 = QtWidgets.QGroupBox(MultipleAnalayzer)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.horizontalGroupBox_31.sizePolicy().hasHeightForWidth())
+        self.horizontalGroupBox_31.setSizePolicy(sizePolicy)
+        self.horizontalGroupBox_31.setObjectName("horizontalGroupBox_31")
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout(self.horizontalGroupBox_31)
+        self.horizontalLayout_9.setContentsMargins(10, -1, 10, 0)
+        self.horizontalLayout_9.setSpacing(10)
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.piechart = QtWidgets.QWidget(self.horizontalGroupBox_31)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.piechart.sizePolicy().hasHeightForWidth())
+        self.piechart.setSizePolicy(sizePolicy)
+        self.piechart.setMinimumSize(QtCore.QSize(400, 0))
+        self.piechart.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.piechart.setObjectName("piechart")
+        self.horizontalLayout_9.addWidget(self.piechart)
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_5.setContentsMargins(-1, 0, 0, 50)
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.verticalFrame_3 = QtWidgets.QFrame(self.horizontalGroupBox_31)
+        self.verticalFrame_3.setObjectName("verticalFrame_3")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalFrame_3)
+        self.verticalLayout_3.setContentsMargins(1, 0, -1, -1)
+        self.verticalLayout_3.setSpacing(9)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.verticalGroupBox_5 = QtWidgets.QGroupBox(self.verticalFrame_3)
+        self.verticalGroupBox_5.setObjectName("verticalGroupBox_5")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.verticalGroupBox_5)
+        self.verticalLayout_6.setContentsMargins(10, 5, 10, 10)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_10.setContentsMargins(-1, 0, -1, -1)
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        self.lbl_threshold = QtWidgets.QLabel(self.verticalGroupBox_5)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lbl_threshold.sizePolicy().hasHeightForWidth())
+        self.lbl_threshold.setSizePolicy(sizePolicy)
+        self.lbl_threshold.setObjectName("lbl_threshold")
+        self.horizontalLayout_10.addWidget(self.lbl_threshold)
+        self.spinbox_threshold = QtWidgets.QDoubleSpinBox(self.verticalGroupBox_5)
+        self.spinbox_threshold.setMinimumSize(QtCore.QSize(50, 22))
+        self.spinbox_threshold.setMaximumSize(QtCore.QSize(50, 22))
+        font = QtGui.QFont()
+        font.setFamily("Microsoft YaHei UI")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setItalic(False)
+        font.setWeight(75)
+        self.spinbox_threshold.setFont(font)
         self.spinbox_threshold.setSpecialValueText("")
         self.spinbox_threshold.setDecimals(1)
         self.spinbox_threshold.setMinimum(0.1)
@@ -229,42 +379,23 @@ class Ui_MultipleAnalayzer(object):
         self.spinbox_threshold.setSingleStep(0.1)
         self.spinbox_threshold.setProperty("value", 0.5)
         self.spinbox_threshold.setObjectName("spinbox_threshold")
-        self.verticalLayout_8.addWidget(self.spinbox_threshold)
-        self.horizontalLayout_3.addLayout(self.verticalLayout_8)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem2)
-        self.verticalLayout_2.addWidget(self.groupbox_trainparams)
-        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_4.setContentsMargins(14, 10, 14, 10)
-        self.horizontalLayout_4.setSpacing(31)
-        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        self.btn_start = QtWidgets.QPushButton(MultipleAnalayzer)
-        self.btn_start.setMinimumSize(QtCore.QSize(0, 35))
-        self.btn_start.setMaximumSize(QtCore.QSize(16777215, 35))
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/images/run.gif"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_start.setIcon(icon3)
-        self.btn_start.setIconSize(QtCore.QSize(30, 30))
-        self.btn_start.setObjectName("btn_start")
-        self.horizontalLayout_4.addWidget(self.btn_start)
-        self.btn_classify = QtWidgets.QPushButton(MultipleAnalayzer)
+        self.horizontalLayout_10.addWidget(self.spinbox_threshold)
+        spacerItem6 = QtWidgets.QSpacerItem(10, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_10.addItem(spacerItem6)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_10)
+        self.btn_classify = QtWidgets.QPushButton(self.verticalGroupBox_5)
         self.btn_classify.setEnabled(False)
-        self.btn_classify.setMinimumSize(QtCore.QSize(0, 35))
-        self.btn_classify.setMaximumSize(QtCore.QSize(16777215, 35))
+        self.btn_classify.setMinimumSize(QtCore.QSize(100, 32))
+        self.btn_classify.setMaximumSize(QtCore.QSize(100, 32))
         self.btn_classify.setIconSize(QtCore.QSize(25, 25))
         self.btn_classify.setObjectName("btn_classify")
-        self.horizontalLayout_4.addWidget(self.btn_classify)
-        self.btn_save = QtWidgets.QPushButton(MultipleAnalayzer)
-        self.btn_save.setEnabled(False)
-        self.btn_save.setMinimumSize(QtCore.QSize(0, 35))
-        self.btn_save.setMaximumSize(QtCore.QSize(16777215, 35))
-        icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(":/images/export-excel.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_save.setIcon(icon4)
-        self.btn_save.setIconSize(QtCore.QSize(35, 35))
-        self.btn_save.setObjectName("btn_save")
-        self.horizontalLayout_4.addWidget(self.btn_save)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
+        self.verticalLayout_6.addWidget(self.btn_classify, 0, QtCore.Qt.AlignHCenter)
+        self.verticalLayout_3.addWidget(self.verticalGroupBox_5)
+        self.verticalLayout_5.addWidget(self.verticalFrame_3)
+        spacerItem7 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_5.addItem(spacerItem7)
+        self.horizontalLayout_9.addLayout(self.verticalLayout_5)
+        self.verticalLayout_2.addWidget(self.horizontalGroupBox_31)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setContentsMargins(14, 8, 14, 0)
         self.horizontalLayout_5.setSpacing(6)
@@ -315,8 +446,6 @@ class Ui_MultipleAnalayzer(object):
         self.verticalLayout_11.addWidget(self.progressbar_batch)
         self.horizontalLayout_5.addLayout(self.verticalLayout_11)
         self.verticalLayout_2.addLayout(self.horizontalLayout_5)
-        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_2.addItem(spacerItem3)
 
         self.retranslateUi(MultipleAnalayzer)
         QtCore.QMetaObject.connectSlotsByName(MultipleAnalayzer)
@@ -327,18 +456,19 @@ class Ui_MultipleAnalayzer(object):
         self.btn_homepage.setToolTip(_translate("MultipleAnalayzer", "Back To HomePage"))
         self.btn_help.setToolTip(_translate("MultipleAnalayzer", "Open Help Documentation"))
         self.lbl_title.setText(_translate("MultipleAnalayzer", "Multiple Tweets Analyzer"))
-        self.label.setText(_translate("MultipleAnalayzer", "Select Model:"))
-        self.groupbox_inputs.setTitle(_translate("MultipleAnalayzer", "Input File"))
+        self.combobox_model.setItemText(0, _translate("MultipleAnalayzer", "Select Model"))
+        self.horizontalGroupBox_3.setTitle(_translate("MultipleAnalayzer", "Input Configuration"))
         self.label_2.setText(_translate("MultipleAnalayzer", "Tweets File:"))
-        self.label_3.setText(_translate("MultipleAnalayzer", "Have Header?"))
-        self.checkbox_header.setText(_translate("MultipleAnalayzer", "Included"))
-        self.btn_tweets_file.setText(_translate("MultipleAnalayzer", "..."))
-        self.groupbox_trainparams.setTitle(_translate("MultipleAnalayzer", "Predict Parameters"))
         self.label_7.setText(_translate("MultipleAnalayzer", "Random Tweets:"))
-        self.label_8.setText(_translate("MultipleAnalayzer", "Threshold:"))
+        self.label_3.setText(_translate("MultipleAnalayzer", "Have Header?"))
+        self.btn_tweets_file.setText(_translate("MultipleAnalayzer", "..."))
+        self.checkbox_header.setText(_translate("MultipleAnalayzer", "Included"))
         self.btn_start.setText(_translate("MultipleAnalayzer", "Predict"))
-        self.btn_classify.setText(_translate("MultipleAnalayzer", "Change Classify"))
+        self.btn_stop.setText(_translate("MultipleAnalayzer", "Stop"))
         self.btn_save.setText(_translate("MultipleAnalayzer", "Export"))
+        self.horizontalGroupBox_31.setTitle(_translate("MultipleAnalayzer", "Results"))
+        self.lbl_threshold.setText(_translate("MultipleAnalayzer", "Threshold:"))
+        self.btn_classify.setText(_translate("MultipleAnalayzer", "Update"))
         self.label_13.setText(_translate("MultipleAnalayzer", "Tweets"))
         self.label_12.setText(_translate("MultipleAnalayzer", "Batch"))
 
