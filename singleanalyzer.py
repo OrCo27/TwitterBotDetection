@@ -5,7 +5,6 @@ from PyQt5.QtCore import QFile, QTextStream, pyqtSignal
 from callbacks_nnet import CallBackSinglePredictNNet
 import os
 import sys
-import glob
 import numpy as np
 sys.path.append('gui/')
 from gui.singleanalyzer_ui import Ui_SingleAnalyzer
@@ -62,9 +61,8 @@ class SingleAnalyzerController(QMainWindow):
         self.main.close()
 
     def load_models_names(self):
-        model_files = glob.glob('output/*.h5')
-        fix_files = list(map(lambda x: os.path.basename(x).split('.')[0], model_files))
-        self.ui.combobox_model.addItems(fix_files)
+        model_names = SinglePredictor.get_models_names()
+        self.ui.combobox_model.addItems(model_names)
 
     def update_ui_scores(self, bot_percentage, human_percentage):
         self.ui.lbl_bot_result.setText(f'{bot_percentage}%')

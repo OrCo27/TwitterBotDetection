@@ -6,7 +6,7 @@ import os
 import pickle
 import csv
 import random
-
+import glob
 
 class SinglePredictor:
     def __init__(self, model_name, callback_predict, tweet_pred=None):
@@ -59,6 +59,12 @@ class SinglePredictor:
 
         # calculate and save the how much current tweet similar to training bots list
         self.bot_similarity_score = len(list(filter(lambda x: x > 0.5, predict_list))) / len(predict_list)
+
+    @staticmethod
+    def get_models_names():
+        model_files = glob.glob('output/*.h5')
+        fixed_files = list(map(lambda x: os.path.basename(x).split('.')[0], model_files))
+        return fixed_files
 
     def load_model(self):
         full_path = os.path.join('output', self.model_name)

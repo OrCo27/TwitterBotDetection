@@ -5,7 +5,6 @@ from PyQt5.QtCore import QFile, QTextStream, pyqtSignal
 from utils_nnet import ModelCommon as Utils
 import os
 import sys
-import glob
 sys.path.append('gui/')
 from gui.multipleanalyzer_ui import Ui_MultipleAnalayzer
 
@@ -68,9 +67,8 @@ class MultipleAnalyzerController(QMainWindow):
         self.main.close()
 
     def load_models_names(self):
-        model_files = glob.glob('output/*.h5')
-        fix_files = list(map(lambda x: os.path.basename(x).split('.')[0], model_files))
-        self.ui.combobox_model.addItems(fix_files)
+        model_names = MultiPredictor.get_models_names()
+        self.ui.combobox_model.addItems(model_names)
 
     def classify_tweets(self):
         threshold = self.ui.spinbox_threshold.value()
