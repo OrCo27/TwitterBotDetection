@@ -229,33 +229,58 @@ padding-right: 1px;
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_6">
+    <layout class="QVBoxLayout" name="verticalLayout_8">
+     <property name="spacing">
+      <number>9</number>
+     </property>
      <property name="leftMargin">
-      <number>60</number>
+      <number>0</number>
      </property>
      <property name="topMargin">
       <number>19</number>
      </property>
      <property name="rightMargin">
-      <number>60</number>
+      <number>0</number>
      </property>
      <property name="bottomMargin">
-      <number>10</number>
+      <number>14</number>
      </property>
      <item>
-      <widget class="QComboBox" name="combobox_model">
-       <property name="maximumSize">
-        <size>
-         <width>270</width>
-         <height>16777215</height>
-        </size>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="topMargin">
+        <number>0</number>
        </property>
        <item>
-        <property name="text">
-         <string>Select Model</string>
-        </property>
+        <widget class="QComboBox" name="combobox_model">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>124</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>270</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToContents</enum>
+         </property>
+         <item>
+          <property name="text">
+           <string>Select Model</string>
+          </property>
+         </item>
+        </widget>
        </item>
-      </widget>
+      </layout>
      </item>
     </layout>
    </item>
@@ -379,13 +404,13 @@ padding-right: 1px;
               </property>
               <property name="minimumSize">
                <size>
-                <width>35</width>
+                <width>32</width>
                 <height>18</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>35</width>
+                <width>32</width>
                 <height>16777215</height>
                </size>
               </property>
