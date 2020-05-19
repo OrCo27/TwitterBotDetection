@@ -181,7 +181,7 @@ class ModelConfigController(QMainWindow):
 
         # Check for early stop validity
         if early_stop > epoches:
-            Utils.show_error(text="Can not Insert Early Stop Epochs\nThat Bigger Than Training Epochs Number!",
+            Utils.show_msg(text="Can not Insert Early Stop Epochs\nThat Bigger Than Training Epochs Number!",
                              title="Input Error")
             return
 
@@ -191,7 +191,7 @@ class ModelConfigController(QMainWindow):
             Utils.file_validation(bot_file, 'Bot')
             Utils.file_validation(human_file, 'Human')
         except Exception as ex:
-            Utils.show_error(text=ex.args[0], title="Input Error")
+            Utils.show_msg(text=ex.args[0], title="Input Error")
             return
 
         # reset progressbars

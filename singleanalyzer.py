@@ -117,7 +117,7 @@ class SingleAnalyzerController(QMainWindow):
             group_boxes_arr[max_element].setDisabled(False)
             group_boxes_arr[min_element].setDisabled(True)
         else:
-            Utils.show_error(text=self.pred_thread.error, title="Error")
+            Utils.show_msg(text=self.pred_thread.error, title="Error")
 
         self.ui.btn_start.setDisabled(False)
         self.ui.textbox_tweet.setReadOnly(False)
