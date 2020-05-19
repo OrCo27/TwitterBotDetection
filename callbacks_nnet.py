@@ -128,9 +128,11 @@ class CallBackSinglePredictNNet(Callback):
         super(CallBackSinglePredictNNet, self).__init__()
         self.update_batch_progress = update_batch_progress
         self.batch_sum = 0
+        self.predict_start = False
 
     def on_predict_begin(self, logs=None):
         self.batch_sum = 0
+        self.predict_start = True
 
     def on_predict_batch_end(self, batch, logs=None):
         # calculate batch percentage for progressbar
@@ -155,3 +157,5 @@ class CallBackMultiPredictNNet(CallBackSinglePredictNNet):
 
         # update progressbar
         self.update_tweets_progress.emit(tweets_progress)
+
+        self.predict_start = False
