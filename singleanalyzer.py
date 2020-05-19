@@ -24,7 +24,6 @@ class SingleAnalyzerController(QMainWindow):
         self._load_stylesheet()
         self.load_models_names()
 
-        #TODO: fix alignment on tweet textbox - with wrapping
         self.pred_thread = None
         self.predictor = None
 
