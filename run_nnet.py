@@ -1,6 +1,6 @@
 from utils_nnet import ModelCommon as Utils
 from tensorflow.keras.models import load_model
-from qtpy.QtCore import QThread
+from PyQt5.QtCore import QThread
 import numpy as np
 import os
 import pickle
@@ -92,6 +92,10 @@ class MultiPredictor(SinglePredictor):
         self.tweet_file = tweet_file
         self.ignore_header = ignore_header
         self.take_random_tweets = take_random_tweets
+        self.stopped = False
+
+    def need_stop(self):
+        self.stopped = True
 
     # loads txt and csv file
     # NOTE: csv file must include in the first column the tweet content
@@ -128,6 +132,9 @@ class MultiPredictor(SinglePredictor):
 
         # pass for each tweet in the file and perform predicting
         for tweet in self.tweets_text_list:
+            if self.stopped:
+                break
+
             # set current tweet text for prediction
             super().set_single_tweet(tweet)
             # perform a single prediction for current tweet
