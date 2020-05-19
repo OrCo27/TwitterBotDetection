@@ -1,4 +1,4 @@
-from run_nnet import MultiPredictor, ModelPredictorThread
+from run_nnet import MultiPredictor, ModelPredictorThread, ExportExcelThread
 from callbacks_nnet import CallBackMultiPredictNNet
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QFile, QTextStream, pyqtSignal, Qt, QMargins
@@ -32,17 +32,17 @@ class MultipleAnalyzerController(QMainWindow):
         self.model_callback = None
         self.predictor = None
         self.pred_thread = None
+        self.export_thread = None
 
         # connect listeners
         self.ui.btn_homepage.clicked.connect(self.back_homepage)
         self.ui.btn_tweets_file.clicked.connect(self.open_file)
         self.ui.btn_start.clicked.connect(self.start_predict)
         self.ui.btn_stop.clicked.connect(self.stop_predict)
+        self.ui.btn_save.clicked.connect(self.save_results)
         self.ui.btn_classify.clicked.connect(self.classify_tweets)
         self.ui.textbox_tweets_file.textChanged.connect(self.check_validation)
         self.ui.combobox_model.currentIndexChanged.connect(self.check_validation)
-        #TODO: add save button for export to excel
-        #TODO: add warning label in case of no more
 
         # connect signals
         self.update_tweet_progress.connect(self.ui.progressbar_tweets.setValue)
@@ -58,6 +58,21 @@ class MultipleAnalyzerController(QMainWindow):
     def _center_on_screen(self):
         resolution = QDesktopWidget().screenGeometry()
         self.main.move((resolution.width() / 2) - (self.main.frameSize().width() / 2), 10)
+
+    def save_results(self):
+        threshold = self.ui.spinbox_threshold.value()
+        filter = "Excel file (*.xlsx)"
+        excel_file, _ = QFileDialog.getSaveFileName(self, 'Save Excel File', "./output/predict_results.xlsx", filter)
+        if excel_file:
+            self.export_thread = ExportExcelThread(self.predictor, threshold, excel_file)
+            self.export_thread.finished.connect(self.export_finished)
+            self.export_thread.start()
+
+    def export_finished(self):
+        if self.export_thread.is_success():
+            Utils.show_msg(text="Exporting Complete!", title="Input Error", msg_type=QMessageBox.Information)
+        else:
+            Utils.show_msg(text=self.export_thread.error, title="Error", msg_type=QMessageBox.Critical)
 
     def check_validation(self):
         model_index = self.ui.combobox_model.currentIndex()
@@ -204,7 +219,7 @@ class MultipleAnalyzerController(QMainWindow):
         try:
             Utils.file_validation(tweets_file, 'Tweet')
         except Exception as ex:
-            Utils.show_error(text=ex.args[0], title="Input Error")
+            Utils.show_msg(text=ex.args[0], title="Input Error")
             return
 
         # reset values of widgets
@@ -230,7 +245,7 @@ class MultipleAnalyzerController(QMainWindow):
             if self.pred_thread.is_success():
                 self.classify_tweets()
             else:
-                Utils.show_error(text=self.pred_thread.error, title="Error")
+                Utils.show_msg(text=self.pred_thread.error, title="Error")
                 self.ui.btn_save.setDisabled(True)
                 self.ui.groupbox_threshold.setDisabled(True)
         else:

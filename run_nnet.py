@@ -1,6 +1,7 @@
 from utils_nnet import ModelCommon as Utils
 from tensorflow.keras.models import load_model
 from PyQt5.QtCore import QThread
+import pandas as pd
 import numpy as np
 import os
 import pickle
@@ -119,6 +120,98 @@ class MultiPredictor(SinglePredictor):
 
         self.tweets_text_list = tweets_list
 
+    def export_to_excel(self, threshold, file_path):
+        # Create a Pandas dataframe from some data.
+        df = pd.DataFrame(
+            {'Tweet Text': self.tweets_text_list,
+             'Bot Score': self.tweets_preds_list})
+
+        df['Predict'] = ''
+
+        start_row = 2
+        for i in range(len(df['Predict'].array)):
+            df['Predict'].array[i] = f'=IF(results!C{start_row} >= threshold!A$2, 1, 0)'
+            start_row += 1
+
+        df_threshold = pd.DataFrame({'Threshold': [threshold]})
+
+        # Create a Pandas Excel writer using XlsxWriter as the engine.
+        writer = pd.ExcelWriter(file_path, engine='xlsxwriter')
+
+        # Convert the dataframe to an XlsxWriter Excel object.
+        df.to_excel(writer, sheet_name='results')
+        df_threshold.to_excel(writer, sheet_name='threshold', index=False)
+
+        # Access the XlsxWriter workbook and worksheet objects from the dataframe.
+        workbook = writer.book
+
+        header_fmt = workbook.add_format({'bold': True})
+        writer.sheets['results'].set_row(0, None, header_fmt)
+        writer.sheets['threshold'].set_row(0, None, header_fmt)
+
+        #######################################################################
+        #
+        # Create an area chart with user defined segment colors.
+        #
+
+        # Create a new Chart object.
+        area_chart = workbook.add_chart({'type': 'area'})
+
+        hist_val, hist_index = np.histogram(self.tweets_preds_list, range=(0, 1))
+        hist_index = hist_index[:-1]
+
+        df_hist = pd.DataFrame({'Scores': hist_index,
+                                'Frequency': hist_val})
+        df_hist.to_excel(writer, sheet_name='histogram', index=False)
+
+        # Configure the chart.
+        area_chart.add_series({'categories': f'=histogram!$A$2:$A${len(hist_index) + 1}',
+                               'values': f'=histogram!$B$2:$B${len(hist_index) + 1}'})
+
+        # Add a chart title and some axis labels.
+        area_chart.set_title({'name': 'Histogram of Bot Scores'})
+        area_chart.set_x_axis({'name': 'Score'})
+        area_chart.set_y_axis({'name': 'Tweets Frequency'})
+
+        # Set an Excel chart style.
+        area_chart.set_style(11)
+
+        # Insert the chart into the worksheet (with an offset).
+        writer.sheets['histogram'].insert_chart('D1', area_chart, {'x_offset': 25, 'y_offset': 10})
+
+        #######################################################################
+        #
+        # Create a Pie chart with user defined segment colors.
+        #
+
+        df_pie = pd.DataFrame(
+         {'Bot': [f'=ROUND(SUM(results!$D$2:$D${len(self.tweets_preds_list) + 1})/{len(self.tweets_preds_list)}*100, 0)'],
+          'Human': [f'=100-pie!A2']})
+
+        df_pie.to_excel(writer, sheet_name='pie', index=False)
+
+        # Create an example Pie chart like above.
+        pie_chart = workbook.add_chart({'type': 'pie'})
+
+        # Configure the series and add user defined segment colors.
+        pie_chart.add_series({
+            'categories': '=pie!$A$1:$B$1',
+            'values': '=pie!$A$2:$B$2',
+            'points': [
+                {'fill': {'color': '#3498db'}},
+                {'fill': {'color': '#a8e6cf'}},
+            ],
+        })
+
+        # Add a title.
+        pie_chart.set_title({'name': 'Prediction Distribution'})
+
+        # Insert the chart into the worksheet (with an offset).
+        writer.sheets['pie'].insert_chart('D1', pie_chart, {'x_offset': 25, 'y_offset': 10})
+
+        # Close the Pandas Excel writer and output the Excel file.
+        writer.save()
+
     # predict multiple tweets from specific file
     def predict(self):
         # load tweets file
@@ -156,6 +249,23 @@ class MultiPredictor(SinglePredictor):
         bot_distribution = len(list(filter(lambda x: x == 1, self.tweets_bot_class))) / len(self.tweets_bot_class)
         return bot_distribution
 
+
+class ExportExcelThread(QThread):
+    def __init__(self, predictor, threshold, excel_path, parent=None):
+        QThread.__init__(self, parent)
+        self.predictor = predictor
+        self.threshold = threshold
+        self.excel_path = excel_path
+        self.error = None
+
+    def is_success(self):
+        return self.error is None
+
+    def run(self):
+        try:
+            self.predictor.export_to_excel(self.threshold, self.excel_path)
+        except Exception as ex:
+            self.error = ex.args[0]
 
 class ModelPredictorThread(QThread):
     def __init__(self, predictor, parent=None):
