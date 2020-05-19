@@ -2,17 +2,19 @@
 
 # Form implementation generated from reading ui file 'SingleAnalyzer.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.14.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_SingleAnalyzer(object):
     def setupUi(self, SingleAnalyzer):
         SingleAnalyzer.setObjectName("SingleAnalyzer")
         SingleAnalyzer.setEnabled(True)
-        SingleAnalyzer.resize(613, 562)
+        SingleAnalyzer.resize(613, 570)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/images/icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         SingleAnalyzer.setWindowIcon(icon)
@@ -459,8 +461,8 @@ class Ui_SingleAnalyzer(object):
         self.lbl_human_result.setText(_translate("SingleAnalyzer", "0%"))
         self.groupbox_bot.setTitle(_translate("SingleAnalyzer", "Bot"))
         self.lbl_bot_result.setText(_translate("SingleAnalyzer", "0%"))
-
 import source_rc
+
 
 if __name__ == "__main__":
     import sys
@@ -470,4 +472,3 @@ if __name__ == "__main__":
     ui.setupUi(SingleAnalyzer)
     SingleAnalyzer.show()
     sys.exit(app.exec_())
-

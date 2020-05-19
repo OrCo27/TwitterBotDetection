@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>615</width>
-    <height>679</height>
+    <width>590</width>
+    <height>670</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Multiple Tweets Analyzer</string>
@@ -254,7 +260,7 @@ padding-right: 1px;
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="horizontalGroupBox_3">
+    <widget class="QGroupBox" name="groupbox_config">
      <property name="title">
       <string>Input Configuration</string>
      </property>
@@ -274,7 +280,7 @@ padding-right: 1px;
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
         <property name="spacing">
-         <number>12</number>
+         <number>0</number>
         </property>
         <property name="topMargin">
          <number>0</number>
@@ -296,6 +302,13 @@ padding-right: 1px;
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="label_7">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -308,19 +321,6 @@ padding-right: 1px;
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Have Header?</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
@@ -329,75 +329,104 @@ padding-right: 1px;
          <number>12</number>
         </property>
         <property name="topMargin">
-         <number>0</number>
+         <number>4</number>
+        </property>
+        <property name="bottomMargin">
+         <number>2</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
           <property name="topMargin">
            <number>0</number>
           </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
-           <widget class="QLineEdit" name="textbox_tweets_file">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="topMargin">
+             <number>0</number>
             </property>
-            <property name="minimumSize">
-             <size>
-              <width>370</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-           </widget>
+            <item>
+             <widget class="QLineEdit" name="textbox_tweets_file">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>370</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_tweets_file">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>35</width>
+                <height>18</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>35</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Preferred</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="btn_tweets_file">
+           <widget class="QCheckBox" name="checkbox_header">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>35</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>35</width>
-              <height>16777215</height>
-             </size>
             </property>
             <property name="text">
-             <string>...</string>
+             <string>Include Header</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Preferred</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </item>
@@ -430,7 +459,7 @@ padding-right: 1px;
              <number>3</number>
             </property>
             <property name="maximum">
-             <number>9000</number>
+             <number>5000</number>
             </property>
             <property name="value">
              <number>50</number>
@@ -439,42 +468,6 @@ padding-right: 1px;
           </item>
           <item>
            <spacer name="horizontalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QCheckBox" name="checkbox_header">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Included</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_3">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -525,6 +518,9 @@ padding-right: 1px;
      </item>
      <item>
       <widget class="QPushButton" name="btn_start">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimumSize">
         <size>
          <width>122</width>
@@ -639,8 +635,14 @@ padding-right: 1px;
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>300</height>
+      </size>
+     </property>
      <property name="title">
-      <string>Results</string>
+      <string/>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_9">
       <property name="spacing">
@@ -649,14 +651,17 @@ padding-right: 1px;
       <property name="leftMargin">
        <number>10</number>
       </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
       <property name="rightMargin">
        <number>10</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>5</number>
       </property>
       <item>
-       <widget class="QWidget" name="piechart" native="true">
+       <widget class="QChartView" name="piechart" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -665,8 +670,8 @@ padding-right: 1px;
         </property>
         <property name="minimumSize">
          <size>
-          <width>400</width>
-          <height>0</height>
+          <width>350</width>
+          <height>270</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -686,7 +691,7 @@ padding-right: 1px;
          <number>0</number>
         </property>
         <property name="bottomMargin">
-         <number>50</number>
+         <number>0</number>
         </property>
         <item>
          <widget class="QFrame" name="verticalFrame_3">
@@ -701,7 +706,10 @@ padding-right: 1px;
             <number>0</number>
            </property>
            <item>
-            <widget class="QGroupBox" name="verticalGroupBox_5">
+            <widget class="QGroupBox" name="groupbox_threshold">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <layout class="QVBoxLayout" name="verticalLayout_6">
               <property name="spacing">
                <number>13</number>
@@ -836,10 +844,13 @@ padding-right: 1px;
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>40</height>
+            <height>31</height>
            </size>
           </property>
          </spacer>
@@ -966,6 +977,14 @@ padding-right: 1px;
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QChartView</class>
+   <extends>QWidget</extends>
+   <header>PyQt5.QtChart</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="source.qrc"/>
  </resources>

@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'ModelConfig.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.14.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_ModelConfig(object):
     def setupUi(self, ModelConfig):
@@ -750,9 +752,9 @@ class Ui_ModelConfig(object):
         self.label_13.setText(_translate("ModelConfig", "Epoches"))
         self.label_12.setText(_translate("ModelConfig", "Batch"))
         self.horizontalGroupBox_4.setTitle(_translate("ModelConfig", "Log"))
-
 from pyqtgraph import PlotWidget
 import source_rc
+
 
 if __name__ == "__main__":
     import sys
@@ -762,4 +764,3 @@ if __name__ == "__main__":
     ui.setupUi(ModelConfig)
     ModelConfig.show()
     sys.exit(app.exec_())
-

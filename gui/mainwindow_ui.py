@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'MainWindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.14.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainMenu(object):
     def setupUi(self, MainMenu):
@@ -187,8 +189,8 @@ class Ui_MainMenu(object):
         self.btn_multi.setText(_translate("MainMenu", "Analyze Multiple Tweets"))
         self.btn_single.setText(_translate("MainMenu", "Analyze Single Tweet"))
         self.btn_help.setText(_translate("MainMenu", "Help"))
-
 import source_rc
+
 
 if __name__ == "__main__":
     import sys
@@ -198,4 +200,3 @@ if __name__ == "__main__":
     ui.setupUi(MainMenu)
     MainMenu.show()
     sys.exit(app.exec_())
-
