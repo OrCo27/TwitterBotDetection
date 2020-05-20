@@ -301,20 +301,30 @@ class ModelConfigController(QMainWindow):
         QApplication.processEvents()
 
     def on_train_finished(self):
-        if self.stop_requested:
-            self.change_widgets_disabled(False)
-            self.log.enable_log()
-            self.log.write_log('Stopped Process Done Successfully!')
+        if self.model_thread.is_success():
+            if self.stop_requested:
+                self.log.enable_log()
+                self.log.write_log('Stopped Process Done Successfully!')
+            else:
+                self.ui.btn_save.setDisabled(False)
+                self.log.write_log('Training Process Completed Successfully!')
         else:
-            self.change_widgets_disabled(False)
-            self.ui.btn_save.setDisabled(False)
-            self.log.write_log('Training Process Completed Successfully!')
+            Utils.show_msg(text=self.model_thread.error, title="Error")
+
+        self.change_widgets_disabled(False)
 
 
 class ModelTrainerThread(QThread):
     def __init__(self, model_train, parent=None):
         QThread.__init__(self, parent)
         self.model_train = model_train
+        self.error = None
+
+    def is_success(self):
+        return self.error is None
 
     def run(self):
-        self.model_train.train_model()
+        try:
+            self.model_train.train_model()
+        except Exception as ex:
+            self.error = ex.args[0]
