@@ -150,7 +150,7 @@ class MultipleAnalyzerController(QMainWindow):
 
         font_title = QFont()
         font_title.setBold(True)
-        font_title.setPointSize(15)
+        font_title.setPointSize(13)
 
         chart = QChart()
         chart.addSeries(series)
@@ -188,7 +188,7 @@ class MultipleAnalyzerController(QMainWindow):
 
         font_title = QFont()
         font_title.setBold(True)
-        font_title.setPointSize(15)
+        font_title.setPointSize(13)
 
         # define the chart properties
         chart = QChart()
