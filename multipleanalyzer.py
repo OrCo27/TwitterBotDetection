@@ -3,6 +3,7 @@ from callbacks_nnet import CallBackMultiPredictNNet
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QFile, QTextStream, pyqtSignal, Qt, QMargins
 from PyQt5.QtChart import QChart, QChartView, QPieSeries, QPieSlice, QLegend
+from PyQt5.QtChart import QValueAxis, QBarCategoryAxis, QBarSet, QBarSeries
 from PyQt5.QtGui import QPainter, QPen, QFont, QColor
 from utils_nnet import ModelCommon as Utils
 import os
@@ -124,11 +125,70 @@ class MultipleAnalyzerController(QMainWindow):
 
         return series
 
+    def create_initialize_histogram(self):
+        bar_set = QBarSet('x')
+        bar_set.append([0] * 10)
+        max_val = 100
+        series = QBarSeries()
+        series.append(bar_set)
+        return series, max_val
+
+    def create_predict_histogram(self):
+        bar_set = QBarSet('x')
+        hist_val, _ = self.predictor.get_hist_values()
+        max_val = max(hist_val)
+        bar_set.append(hist_val)
+        series = QBarSeries()
+        series.append(bar_set)
+        return series, max_val
+
+    def create_histogram(self, series, max_val, animation=True):
+        if animation:
+            animation_type = QChart.AllAnimations
+        else:
+            animation_type = QChart.NoAnimation
+
+        font_title = QFont()
+        font_title.setBold(True)
+        font_title.setPointSize(15)
+
+        chart = QChart()
+        chart.addSeries(series)
+        chart.setTitle('Histogram of Bot Scores')
+        chart.setTitleFont(font_title)
+        chart.setBackgroundVisible(False)
+        chart.setMargins(QMargins())
+        chart.setAnimationOptions(animation_type)
+
+        scores = ('0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9')
+
+        axisX = QBarCategoryAxis()
+        axisX.setTitleText("Bot Score")
+        axisX.append(scores)
+
+        axisY = QValueAxis()
+        axisY.setTitleText("Number Of Tweets")
+        axisY.setRange(0, max_val)
+
+        chart.addAxis(axisX, Qt.AlignBottom)
+        chart.addAxis(axisY, Qt.AlignLeft)
+
+        chart.legend().setVisible(False)
+        chart.legend().setAlignment(Qt.AlignBottom)
+
+        self.ui.histogram.setChart(chart)
+        self.ui.histogram.setRenderHint(QPainter.Antialiasing)
+        QApplication.processEvents()
+
     def create_piechart(self, series, animation=True):
         if animation:
             animation_type = QChart.AllAnimations
         else:
             animation_type = QChart.NoAnimation
+
+        font_title = QFont()
+        font_title.setBold(True)
+        font_title.setPointSize(15)
 
         # define the chart properties
         chart = QChart()
@@ -137,15 +197,17 @@ class MultipleAnalyzerController(QMainWindow):
         chart.setAnimationOptions(animation_type)
         chart.setBackgroundVisible(False)
         chart.setMargins(QMargins())
+        chart.setTitle("Prediction Distribution")
+        chart.setTitleFont(font_title)
 
-        font = QFont()
-        font.setBold(True)
+        font_legend = QFont()
+        font_legend.setBold(True)
 
         # define legend properties
         chart.legend().show()
         chart.legend().setVisible(True)
         chart.legend().setAlignment(Qt.AlignBottom)
-        chart.legend().setFont(font)
+        chart.legend().setFont(font_legend)
         self.ui.piechart.setChart(chart)
         self.ui.piechart.setRenderHint(QPainter.Antialiasing)
         QApplication.processEvents()
@@ -176,8 +238,13 @@ class MultipleAnalyzerController(QMainWindow):
         self.predictor.classify_by_threshold(threshold=threshold)
         bots_part = self.predictor.get_bots_distribution()
 
-        series = self.create_predict_pieseries(bots_part)
-        self.create_piechart(series, animation=True)
+        # update pie chart prediction
+        pie_series = self.create_predict_pieseries(bots_part)
+        self.create_piechart(pie_series, animation=True)
+
+        # update histogram chart prediction
+        hist_series, max_val = self.create_predict_histogram()
+        self.create_histogram(hist_series, max_val, animation=True)
 
     def disable_widgets(self, state):
         self.ui.btn_start.setDisabled(state)
@@ -192,8 +259,12 @@ class MultipleAnalyzerController(QMainWindow):
         self.need_stop = False
 
         # reset piechart
-        series = self.create_initialize_pieseries()
-        self.create_piechart(series, animation=False)
+        pie_series = self.create_initialize_pieseries()
+        self.create_piechart(pie_series, animation=False)
+
+        # reset histogram
+        hist_series, max_val = self.create_initialize_histogram()
+        self.create_histogram(hist_series, max_val, animation=False)
 
         # reset progressbars
         self.ui.progressbar_batch.setValue(0)

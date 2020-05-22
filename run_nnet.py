@@ -120,6 +120,11 @@ class MultiPredictor(SinglePredictor):
 
         self.tweets_text_list = tweets_list
 
+    def get_hist_values(self):
+        hist_val, hist_index = np.histogram(self.tweets_preds_list, range=(0, 1))
+        hist_index = hist_index[:-1]
+        return hist_val, hist_index
+
     def export_to_excel(self, threshold, file_path):
         # Create a Pandas dataframe from some data.
         df = pd.DataFrame(
@@ -157,8 +162,7 @@ class MultiPredictor(SinglePredictor):
         # Create a new Chart object.
         area_chart = workbook.add_chart({'type': 'area'})
 
-        hist_val, hist_index = np.histogram(self.tweets_preds_list, range=(0, 1))
-        hist_index = hist_index[:-1]
+        hist_val, hist_index = self.get_hist_values()
 
         df_hist = pd.DataFrame({'Scores': hist_index,
                                 'Frequency': hist_val})
@@ -218,7 +222,7 @@ class MultiPredictor(SinglePredictor):
         self._load_file_content()
 
         # check for overflowing
-        if len(self.tweets_text_list) > self.take_random_tweets:
+        if len(self.tweets_text_list) >= self.take_random_tweets:
             self.tweets_text_list = random.sample(self.tweets_text_list, self.take_random_tweets)
         else:
             raise Exception('The Random Tweets you Choose is Bigger Than Number of Tweets in File!')
