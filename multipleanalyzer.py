@@ -95,7 +95,7 @@ class MultipleAnalyzerController(QMainWindow):
         series.append(none_slice)
         series.setLabelsVisible(False)
         series.setLabelsPosition(QPieSlice.LabelOutside)
-        series.setPieSize(1.0)
+        series.setPieSize(0.94)
 
         return series
 
@@ -121,7 +121,7 @@ class MultipleAnalyzerController(QMainWindow):
         series.append(human_slice)
         series.setLabelsVisible(False)
         series.setLabelsPosition(QPieSlice.LabelInsideHorizontal)
-        series.setPieSize(1.0)
+        series.setPieSize(0.94)
 
         return series
 
