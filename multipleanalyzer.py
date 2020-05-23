@@ -214,7 +214,7 @@ class MultipleAnalyzerController(QMainWindow):
 
     def open_file(self):
         try:
-            filter = "CSV files (*.csv);;Text files (.txt)"
+            filter = "CSV files (*.csv);;Text files (*.txt)"
             file_path, _ = QFileDialog.getOpenFileName(self, "Please select a file", "./data/", filter)
             if file_path:
                 self.ui.textbox_tweets_file.setText(file_path)
