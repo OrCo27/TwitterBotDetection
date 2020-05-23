@@ -312,21 +312,25 @@ class ModelTestPredictor(AbstractMultiPredictor):
 
         self.tweets_labeled_list = part_bot_labeled + part_human_labeled
 
-    def _get_accuracy_of_list(self, labeled_list, predict_list):
-        matched_cnt = len(list(filter(lambda x: x[0] == x[1], zip(labeled_list, predict_list))))
-        matched_score = matched_cnt / len(labeled_list)
+    def _get_accuracy_of_list(self, labeled_class_pairs_list):
+        matched_cnt = len(list(filter(lambda x: x[0] == x[1], labeled_class_pairs_list)))
+        matched_score = matched_cnt / len(labeled_class_pairs_list)
         return matched_score
 
     def get_accuracy_bot_human(self):
-        correct_bot_score = self._get_accuracy_of_list(self.tweets_labeled_list[:self.bot_total_tweets],
-                                                       self.tweets_class_list[:self.bot_total_tweets])
+        bot_labeled_class_pairs_list = list(filter(lambda x: x[0] == 1,
+                                                   zip(self.tweets_labeled_list, self.tweets_class_list)))
+        human_labeled_class_pairs_list = list(filter(lambda x: x[0] == 0,
+                                                     zip(self.tweets_labeled_list, self.tweets_class_list)))
 
-        correct_human_score = self._get_accuracy_of_list(self.tweets_labeled_list[self.bot_total_tweets:],
-                                                         self.tweets_class_list[self.bot_total_tweets:])
+        correct_bot_score = self._get_accuracy_of_list(bot_labeled_class_pairs_list)
+        correct_human_score = self._get_accuracy_of_list(human_labeled_class_pairs_list)
+
         return correct_bot_score, correct_human_score
 
     def get_accuracy_model(self):
-        correct_score = self._get_accuracy_of_list(self.tweets_labeled_list, self.tweets_class_list)
+        tweets_labeled_class_pairs_list = list(zip(self.tweets_labeled_list, self.tweets_class_list))
+        correct_score = self._get_accuracy_of_list(tweets_labeled_class_pairs_list)
         return correct_score
 
     def _build_result_sheet(self):
@@ -336,7 +340,7 @@ class ModelTestPredictor(AbstractMultiPredictor):
         df_result['Matched'] = ''
         start_row = 2
         for i in range(len(df_result['Matched'].array)):
-            df_result['Matched'].array[i] = f'=IF(results!D{start_row} >= results!E{start_row}, 1, 0)'
+            df_result['Matched'].array[i] = f'=IF(results!D{start_row} = results!E{start_row}, 1, 0)'
             start_row += 1
 
         return df_result
@@ -346,7 +350,7 @@ class ModelTestPredictor(AbstractMultiPredictor):
         bar_chart = self._create_bar_chart(writer)
 
         # Insert the charts into the worksheet (with an offset).
-        writer.sheets['barchart'].insert_chart('D1', bar_chart, {'x_offset': 25, 'y_offset': 10})
+        writer.sheets['summary'].insert_chart('F1', bar_chart, {'x_offset': 25, 'y_offset': 10})
 
     def _create_bar_chart(self, writer):
         workbook = writer.book
@@ -359,7 +363,8 @@ class ModelTestPredictor(AbstractMultiPredictor):
         # prepare bot column
         bot_col = []
         bot_col.append(self.bot_total_tweets)
-        bot_col.append('=COUNTIFS(results!$F$2:$F$26, "=1", results!$D$2:$D$26, "=1")')
+        bot_col.append(f'=COUNTIFS(results!$F$2:$F${len(self.tweets_scores_list)+1}, "=1", '
+                       f'results!$D$2:$D${len(self.tweets_scores_list)+1}, "=1")')
         bot_col.append('=summary!$B$2-summary!$B$3')
         bot_col.append('=ROUND(summary!$B$3/summary!$B$2*100, 0)')
         bot_col.append('=100-summary!$B$5')
@@ -367,16 +372,21 @@ class ModelTestPredictor(AbstractMultiPredictor):
         # prepare human column
         human_col = []
         human_col.append(self.human_total_tweets)
-        human_col.append('=COUNTIFS(results!$F$2:$F$26, "=1", results!$D$2:$D$26, "=0")')
+        human_col.append(f'=COUNTIFS(results!$F$2:$F${len(self.tweets_scores_list)+1}, "=1", '
+                         f'results!$D$2:$D${len(self.tweets_scores_list)+1}, "=0")')
         human_col.append('=summary!$C$2-summary!$C$3')
         human_col.append('=ROUND(summary!$C$3/summary!$C$2*100, 0)')
         human_col.append('=100-summary!$C$5')
 
-        df_col = pd.DataFrame({'Bot': bot_col,
+        df_col = pd.DataFrame({'Index': index,
+                               'Bot': bot_col,
                                'Human': human_col})
 
-        df_col.set_index(index)
-        df_col.to_excel(writer, sheet_name='summary', index=True)
+        df_col.set_index('Index')
+        df_col.to_excel(writer, sheet_name='summary', index=False)
+
+        # bold the first column on current sheet
+        writer.sheets['summary'].set_column('A:A', 18)
 
         # Configure the first series.
         bar_chart.add_series({
