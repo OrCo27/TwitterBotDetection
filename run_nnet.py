@@ -84,19 +84,57 @@ class SinglePredictor:
         self.additional_feats_enabled = additional_feats_enabled
 
 
-class MultiPredictor(SinglePredictor):
-    def __init__(self, model_name, callback_predict, tweet_file, ignore_header=False, take_random_tweets=150):
+class AbstractMultiPredictor(SinglePredictor):
+    def __init__(self, model_name, callback_predict, total_tweets):
         super().__init__(model_name, callback_predict)
         self.tweets_text_list = [] # original tweets text
         self.tweets_preds_list = [] # predicts score for each tweet
-        self.tweets_bot_class = [] # 1 for bot, 0 for human
-        self.tweet_file = tweet_file
-        self.ignore_header = ignore_header
-        self.take_random_tweets = take_random_tweets
+        self.tweets_bot_class = [] # predict classification: 1 for bot, 0 for human
         self.stopped = False
+        self.total_tweets = total_tweets
 
     def need_stop(self):
         self.stopped = True
+
+    def export_to_excel(self, threshold, file_path):
+        pass
+
+    def _load_file_content(self):
+        pass
+
+    # predict multiple tweets
+    def predict(self):
+        # load tweets file
+        self._load_file_content()
+
+        # pass for each tweet in the file and perform predicting
+        for tweet in self.tweets_text_list:
+            if self.stopped:
+                break
+
+            # set current tweet text for prediction
+            super().set_single_tweet(tweet)
+            # perform a single prediction for current tweet
+            super().predict()
+            # get the similarity score for current tweet
+            sim_bot_score = super().get_similarity_score()
+            # add the score to predictions list
+            self.tweets_preds_list.append(sim_bot_score)
+
+    def _check_if_bot(self, score, threshold):
+        return 1 if (score >= threshold) else 0
+
+        # create the classification of bots based on threshold
+
+    def classify_by_threshold(self, threshold=0.5):
+        self.tweets_bot_class = [self._check_if_bot(x, threshold) for x in self.tweets_preds_list]
+
+
+class MultiPredictor(AbstractMultiPredictor):
+    def __init__(self, model_name, callback_predict, tweet_file, ignore_header=False, take_random_tweets=150):
+        super().__init__(model_name, callback_predict, take_random_tweets)
+        self.tweet_file = tweet_file
+        self.ignore_header = ignore_header
 
     # loads txt and csv file
     # NOTE: csv file must include in the first column the tweet content
@@ -118,7 +156,11 @@ class MultiPredictor(SinglePredictor):
         if self.ignore_header:
             tweets_list.remove(tweets_list[0])
 
-        self.tweets_text_list = tweets_list
+        # check for overflowing
+        if len(tweets_list) >= self.total_tweets:
+            self.tweets_text_list = random.sample(tweets_list, self.total_tweets)
+        else:
+            raise Exception('The Random Tweets you Choose is Bigger Than Number of Tweets in File!')
 
     def get_hist_values(self):
         hist_val, hist_index = np.histogram(self.tweets_preds_list, range=(0, 1))
@@ -129,9 +171,8 @@ class MultiPredictor(SinglePredictor):
         # Create a Pandas dataframe from some data.
         df = pd.DataFrame(
             {'Tweet Text': self.tweets_text_list,
-             'Bot Score': self.tweets_preds_list})
-
-        df['Predict'] = ''
+             'Bot Score': self.tweets_preds_list,
+             'Predict': ''})
 
         start_row = 2
         for i in range(len(df['Predict'].array)):
@@ -216,42 +257,66 @@ class MultiPredictor(SinglePredictor):
         # Close the Pandas Excel writer and output the Excel file.
         writer.save()
 
-    # predict multiple tweets from specific file
-    def predict(self):
-        # load tweets file
-        self._load_file_content()
-
-        # check for overflowing
-        if len(self.tweets_text_list) >= self.take_random_tweets:
-            self.tweets_text_list = random.sample(self.tweets_text_list, self.take_random_tweets)
-        else:
-            raise Exception('The Random Tweets you Choose is Bigger Than Number of Tweets in File!')
-
-        # pass for each tweet in the file and perform predicting
-        for tweet in self.tweets_text_list:
-            if self.stopped:
-                break
-
-            # set current tweet text for prediction
-            super().set_single_tweet(tweet)
-            # perform a single prediction for current tweet
-            super().predict()
-            # get the similarity score for current tweet
-            sim_bot_score = super().get_similarity_score()
-            # add the score to predictions list
-            self.tweets_preds_list.append(sim_bot_score)
-
-    def _check_if_bot(self, score, threshold):
-        return 1 if (score >= threshold) else 0
-
-    # create the classification of bots based on threshold
-    def classify_by_threshold(self, threshold=0.5):
-        self.tweets_bot_class = [self._check_if_bot(x, threshold) for x in self.tweets_preds_list]
-
     # get the bots distribution in decimal
     def get_bots_distribution(self):
         bot_distribution = len(list(filter(lambda x: x == 1, self.tweets_bot_class))) / len(self.tweets_bot_class)
         return bot_distribution
+
+
+class ModelTestPredictor(AbstractMultiPredictor):
+    def __init__(self, model_name, callback_predict, bot_file, human_file, bot_tweets, human_tweets):
+        super().__init__(model_name, callback_predict, bot_tweets+human_tweets)
+        self.bot_file = bot_file
+        self.human_file = human_file
+        self.bot_tweets = bot_tweets
+        self.human_tweets = human_tweets
+        self.tweets_labeled = []
+        self.part_bot_text_list = []
+        self.part_human_text_list = []
+        self.part_bot_labeled = []
+        self.part_human_labeled = []
+
+    def _load_file_content(self):
+        # read all files
+        with open(self.bot_file, 'r', encoding='utf-8') as f:
+            bot_list = f.readlines()
+
+        with open(self.human_file, 'r', encoding='utf-8') as f:
+            human_list = f.readlines()
+
+        # take only part of the bigger list
+        if len(bot_list) >= self.bot_tweets:
+            self.part_bot_text_list = random.sample(bot_list, self.bot_tweets)
+        else:
+            raise Exception('The Random Bot Tweets you Choose is Bigger Than Number of Tweets in File!')
+
+        if len(human_list) >= self.human_tweets:
+            self.part_human_text_list = random.sample(human_list, self.human_tweets)
+        else:
+            raise Exception('The Random Human Tweets you Choose is Bigger Than Number of Tweets in File!')
+
+        # concatenate two lists into one list
+        self.tweets_text_list = self.part_bot_text_list + self.part_human_text_list
+
+        self.part_bot_labeled = ([1] * self.bot_tweets)
+        self.part_human_labeled = ([0] * self.human_tweets)
+        self.tweets_labeled = self.part_bot_labeled + self.part_human_labeled
+
+    def _get_accuracy_of_list(self, labeled_list, predict_list):
+        matched_cnt = len(list(filter(lambda x: x[0] == x[1], zip(labeled_list, predict_list))))
+        return matched_cnt / len(labeled_list)
+
+    def get_accuracy_bot_human(self):
+        correct_bot_score = self._get_accuracy_of_list(self.part_bot_labeled, self.tweets_bot_class[:self.bot_tweets])
+        correct_human_score = self._get_accuracy_of_list(self.part_human_labeled, self.tweets_bot_class[self.bot_tweets:])
+        return correct_bot_score, correct_human_score
+
+    def get_accuracy_model(self):
+        correct_score = self._get_accuracy_of_list(self.tweets_labeled, self.tweets_bot_class)
+        return correct_score
+
+    def export_to_excel(self, threshold, file_path):
+        pass
 
 
 class ExportExcelThread(QThread):
