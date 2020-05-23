@@ -60,7 +60,7 @@ class ModelTestController(QMainWindow):
 
     def _center_on_screen(self):
         resolution = QDesktopWidget().screenGeometry()
-        self.main.move((resolution.width() / 2) - (self.main.frameSize().width() / 2), 10)
+        self.main.move((resolution.width() / 2) - (self.main.frameSize().width() / 2), 5)
 
     def save_results(self):
         threshold = self.ui.spinbox_threshold.value()
