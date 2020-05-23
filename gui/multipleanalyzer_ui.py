@@ -369,7 +369,7 @@ class Ui_MultipleAnalayzer(object):
         sizePolicy.setHeightForWidth(self.piechart.sizePolicy().hasHeightForWidth())
         self.piechart.setSizePolicy(sizePolicy)
         self.piechart.setMinimumSize(QtCore.QSize(270, 270))
-        self.piechart.setMaximumSize(QtCore.QSize(280, 16777215))
+        self.piechart.setMaximumSize(QtCore.QSize(350, 16777215))
         self.piechart.setObjectName("piechart")
         self.horizontalLayout_9.addWidget(self.piechart)
         self.verticalLayout_5 = QtWidgets.QVBoxLayout()
