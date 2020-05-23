@@ -385,6 +385,16 @@ class ModelTestPredictor(AbstractMultiPredictor):
         df_col.set_index('Index')
         df_col.to_excel(writer, sheet_name='summary', index=False)
 
+        # write model accuracy
+        cell_format = workbook.add_format({'bold': True, 'font_color': 'red'})
+        cell_format.set_bg_color('yellow')
+
+        cell_acc = workbook.add_format({'bold': True, 'font_color': 'red', 'num_format': '0%'})
+        cell_acc.set_bg_color('yellow')
+
+        writer.sheets['summary'].write_string('A9', 'Model Accuracy', cell_format)
+        writer.sheets['summary'].write_formula('B9', '=(summary!B3+summary!C3)/(summary!B2+summary!C2)', cell_acc)
+
         # bold the first column on current sheet
         writer.sheets['summary'].set_column('A:A', 18)
 
