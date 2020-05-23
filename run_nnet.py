@@ -88,16 +88,55 @@ class AbstractMultiPredictor(SinglePredictor):
     def __init__(self, model_name, callback_predict, total_tweets):
         super().__init__(model_name, callback_predict)
         self.tweets_text_list = [] # original tweets text
-        self.tweets_preds_list = [] # predicts score for each tweet
-        self.tweets_bot_class = [] # predict classification: 1 for bot, 0 for human
+        self.tweets_scores_list = [] # predicts score for each tweet
+        self.tweets_class_list = [] # predict classification: 1 for bot, 0 for human
         self.stopped = False
         self.total_tweets = total_tweets
 
     def need_stop(self):
         self.stopped = True
 
-    def export_to_excel(self, threshold, file_path):
+    def _build_result_sheet(self):
+        # Create a Pandas dataframe from some data.
+        df_result = pd.DataFrame({'Tweet Text': self.tweets_text_list,
+                                  'Bot Score': self.tweets_scores_list,
+                                  'Predict': ''})
+
+        start_row = 2
+        for i in range(len(df_result['Predict'].array)):
+            df_result['Predict'].array[i] = f'=IF(results!C{start_row} >= threshold!A$2, 1, 0)'
+            start_row += 1
+
+        return df_result
+
+    def _build_charts_sheets(self, writer):
         pass
+
+    def export_to_excel(self, threshold, file_path):
+        # create sheets in excel workbook
+        df_result = self._build_result_sheet()
+        df_threshold = pd.DataFrame({'Threshold': [threshold]})
+
+        # create a Pandas Excel writer using XlsxWriter as the engine.
+        writer = pd.ExcelWriter(file_path, engine='xlsxwriter')
+
+        # convert the dataframe to an XlsxWriter Excel object.
+        df_result.to_excel(writer, sheet_name='results')
+        df_threshold.to_excel(writer, sheet_name='threshold', index=False)
+
+        # Access the XlsxWriter workbook and worksheet objects from the dataframe.
+        workbook = writer.book
+
+        # bold the first row on each sheet
+        header_fmt = workbook.add_format({'bold': True})
+        writer.sheets['results'].set_row(0, None, header_fmt)
+        writer.sheets['threshold'].set_row(0, None, header_fmt)
+
+        # build charts on workbook
+        self._build_charts_sheets(writer)
+
+        # Close the Pandas Excel writer and output the Excel file.
+        writer.save()
 
     def _load_file_content(self):
         pass
@@ -119,15 +158,14 @@ class AbstractMultiPredictor(SinglePredictor):
             # get the similarity score for current tweet
             sim_bot_score = super().get_similarity_score()
             # add the score to predictions list
-            self.tweets_preds_list.append(sim_bot_score)
+            self.tweets_scores_list.append(sim_bot_score)
 
     def _check_if_bot(self, score, threshold):
         return 1 if (score >= threshold) else 0
 
-        # create the classification of bots based on threshold
-
+    # create the classification of bots based on threshold
     def classify_by_threshold(self, threshold=0.5):
-        self.tweets_bot_class = [self._check_if_bot(x, threshold) for x in self.tweets_preds_list]
+        self.tweets_class_list = [self._check_if_bot(x, threshold) for x in self.tweets_scores_list]
 
 
 class MultiPredictor(AbstractMultiPredictor):
@@ -163,43 +201,22 @@ class MultiPredictor(AbstractMultiPredictor):
             raise Exception('The Random Tweets you Choose is Bigger Than Number of Tweets in File!')
 
     def get_hist_values(self):
-        hist_val, hist_index = np.histogram(self.tweets_preds_list, range=(0, 1))
+        hist_val, hist_index = np.histogram(self.tweets_scores_list, range=(0, 1))
         hist_index = hist_index[:-1]
         return hist_val, hist_index
 
-    def export_to_excel(self, threshold, file_path):
-        # Create a Pandas dataframe from some data.
-        df = pd.DataFrame(
-            {'Tweet Text': self.tweets_text_list,
-             'Bot Score': self.tweets_preds_list,
-             'Predict': ''})
-
-        start_row = 2
-        for i in range(len(df['Predict'].array)):
-            df['Predict'].array[i] = f'=IF(results!C{start_row} >= threshold!A$2, 1, 0)'
-            start_row += 1
-
-        df_threshold = pd.DataFrame({'Threshold': [threshold]})
-
-        # Create a Pandas Excel writer using XlsxWriter as the engine.
-        writer = pd.ExcelWriter(file_path, engine='xlsxwriter')
-
-        # Convert the dataframe to an XlsxWriter Excel object.
-        df.to_excel(writer, sheet_name='results')
-        df_threshold.to_excel(writer, sheet_name='threshold', index=False)
-
-        # Access the XlsxWriter workbook and worksheet objects from the dataframe.
+    def _build_charts_sheets(self, writer):
         workbook = writer.book
 
-        header_fmt = workbook.add_format({'bold': True})
-        writer.sheets['results'].set_row(0, None, header_fmt)
-        writer.sheets['threshold'].set_row(0, None, header_fmt)
+        # create histogram chart
+        area_chart = self._create_histogram_chart(workbook, writer)
+        pie_chart = self._create_pie_chart(workbook, writer)
 
-        #######################################################################
-        #
-        # Create an area chart with user defined segment colors.
-        #
+        # Insert the charts into the worksheet (with an offset).
+        writer.sheets['histogram'].insert_chart('D1', area_chart, {'x_offset': 25, 'y_offset': 10})
+        writer.sheets['pie'].insert_chart('D1', pie_chart, {'x_offset': 25, 'y_offset': 10})
 
+    def _create_histogram_chart(self, workbook, writer):
         # Create a new Chart object.
         area_chart = workbook.add_chart({'type': 'area'})
 
@@ -221,17 +238,13 @@ class MultiPredictor(AbstractMultiPredictor):
         # Set an Excel chart style.
         area_chart.set_style(11)
 
-        # Insert the chart into the worksheet (with an offset).
-        writer.sheets['histogram'].insert_chart('D1', area_chart, {'x_offset': 25, 'y_offset': 10})
+        return area_chart
 
-        #######################################################################
-        #
-        # Create a Pie chart with user defined segment colors.
-        #
-
+    def _create_pie_chart(self, workbook, writer):
         df_pie = pd.DataFrame(
-         {'Bot': [f'=ROUND(SUM(results!$D$2:$D${len(self.tweets_preds_list) + 1})/{len(self.tweets_preds_list)}*100, 0)'],
-          'Human': [f'=100-pie!A2']})
+            {'Bot': [
+                f'=ROUND(SUM(results!$D$2:$D${len(self.tweets_scores_list) + 1})/{len(self.tweets_scores_list)}*100, 0)'],
+             'Human': [f'=100-pie!A2']})
 
         df_pie.to_excel(writer, sheet_name='pie', index=False)
 
@@ -251,30 +264,24 @@ class MultiPredictor(AbstractMultiPredictor):
         # Add a title.
         pie_chart.set_title({'name': 'Prediction Distribution'})
 
-        # Insert the chart into the worksheet (with an offset).
-        writer.sheets['pie'].insert_chart('D1', pie_chart, {'x_offset': 25, 'y_offset': 10})
-
-        # Close the Pandas Excel writer and output the Excel file.
-        writer.save()
+        return pie_chart
 
     # get the bots distribution in decimal
     def get_bots_distribution(self):
-        bot_distribution = len(list(filter(lambda x: x == 1, self.tweets_bot_class))) / len(self.tweets_bot_class)
+        bot_distribution = len(list(filter(lambda x: x == 1, self.tweets_class_list))) / len(self.tweets_class_list)
         return bot_distribution
 
 
 class ModelTestPredictor(AbstractMultiPredictor):
-    def __init__(self, model_name, callback_predict, bot_file, human_file, bot_tweets, human_tweets):
-        super().__init__(model_name, callback_predict, bot_tweets+human_tweets)
+    def __init__(self, model_name, callback_predict, bot_file, human_file, bot_total_tweets, human_total_tweets):
+        super().__init__(model_name, callback_predict, bot_total_tweets+human_total_tweets)
         self.bot_file = bot_file
         self.human_file = human_file
-        self.bot_tweets = bot_tweets
-        self.human_tweets = human_tweets
-        self.tweets_labeled = []
+        self.bot_total_tweets = bot_total_tweets
+        self.human_total_tweets = human_total_tweets
+        self.tweets_labeled_list = []
         self.part_bot_text_list = []
         self.part_human_text_list = []
-        self.part_bot_labeled = []
-        self.part_human_labeled = []
 
     def _load_file_content(self):
         # read all files
@@ -285,38 +292,115 @@ class ModelTestPredictor(AbstractMultiPredictor):
             human_list = f.readlines()
 
         # take only part of the bigger list
-        if len(bot_list) >= self.bot_tweets:
-            self.part_bot_text_list = random.sample(bot_list, self.bot_tweets)
+        if len(bot_list) >= self.bot_total_tweets:
+            self.part_bot_text_list = random.sample(bot_list, self.bot_total_tweets)
         else:
             raise Exception('The Random Bot Tweets you Choose is Bigger Than Number of Tweets in File!')
 
-        if len(human_list) >= self.human_tweets:
-            self.part_human_text_list = random.sample(human_list, self.human_tweets)
+        if len(human_list) >= self.human_total_tweets:
+            self.part_human_text_list = random.sample(human_list, self.human_total_tweets)
         else:
             raise Exception('The Random Human Tweets you Choose is Bigger Than Number of Tweets in File!')
 
         # concatenate two lists into one list
         self.tweets_text_list = self.part_bot_text_list + self.part_human_text_list
 
-        self.part_bot_labeled = ([1] * self.bot_tweets)
-        self.part_human_labeled = ([0] * self.human_tweets)
-        self.tweets_labeled = self.part_bot_labeled + self.part_human_labeled
+        part_bot_labeled = ([1] * self.bot_total_tweets)
+        part_human_labeled = ([0] * self.human_total_tweets)
+
+        self.tweets_labeled_list = part_bot_labeled + part_human_labeled
 
     def _get_accuracy_of_list(self, labeled_list, predict_list):
         matched_cnt = len(list(filter(lambda x: x[0] == x[1], zip(labeled_list, predict_list))))
-        return matched_cnt / len(labeled_list)
+        matched_score = matched_cnt / len(labeled_list)
+        return matched_score
 
     def get_accuracy_bot_human(self):
-        correct_bot_score = self._get_accuracy_of_list(self.part_bot_labeled, self.tweets_bot_class[:self.bot_tweets])
-        correct_human_score = self._get_accuracy_of_list(self.part_human_labeled, self.tweets_bot_class[self.bot_tweets:])
+        correct_bot_score = self._get_accuracy_of_list(self.tweets_labeled_list[:self.bot_total_tweets],
+                                                       self.tweets_class_list[:self.bot_total_tweets])
+
+        correct_human_score = self._get_accuracy_of_list(self.tweets_labeled_list[self.bot_total_tweets:],
+                                                         self.tweets_class_list[self.bot_total_tweets:])
         return correct_bot_score, correct_human_score
 
     def get_accuracy_model(self):
-        correct_score = self._get_accuracy_of_list(self.tweets_labeled, self.tweets_bot_class)
+        correct_score = self._get_accuracy_of_list(self.tweets_labeled_list, self.tweets_class_list)
         return correct_score
 
-    def export_to_excel(self, threshold, file_path):
-        pass
+    def _build_result_sheet(self):
+        df_result = super()._build_result_sheet()
+        df_result.insert(2, 'Label', self.tweets_labeled_list, True)
+
+        df_result['Matched'] = ''
+        start_row = 2
+        for i in range(len(df_result['Matched'].array)):
+            df_result['Matched'].array[i] = f'=IF(results!D{start_row} >= results!E{start_row}, 1, 0)'
+            start_row += 1
+
+        return df_result
+
+    def _build_charts_sheets(self, writer):
+        workbook = writer.book
+
+        # create histogram chart
+        bar_chart = self._create_bar_chart(workbook, writer)
+
+        # Insert the charts into the worksheet (with an offset).
+        writer.sheets['barchart'].insert_chart('D1', bar_chart, {'x_offset': 25, 'y_offset': 10})
+
+    def _create_bar_chart(self, workbook, writer):
+        # Create a new Chart object.
+        bar_chart = workbook.add_chart({'type': 'column'})
+
+        index = ['Total Tweets', 'Correct Tweets', 'Wrong Tweets', 'Correct Percentage', 'Wrong Percentage']
+
+        # prepare bot column
+        bot_col = []
+        bot_col.append(self.bot_total_tweets)
+        bot_col.append('=COUNTIFS(results!$F$2:$F$26, "=1", results!$D$2:$D$26, "=1")')
+        bot_col.append('=summary!$B$2-summary!$B$3')
+        bot_col.append('=ROUND(summary!$B$3/summary!$B$2*100, 0)')
+        bot_col.append('=100-summary!$B$5')
+
+        # prepare human column
+        human_col = []
+        human_col.append(self.human_total_tweets)
+        human_col.append('=COUNTIFS(results!$F$2:$F$26, "=1", results!$D$2:$D$26, "=0")')
+        human_col.append('=summary!$C$2-summary!$C$3')
+        human_col.append('=ROUND(summary!$C$3/summary!$C$2*100, 0)')
+        human_col.append('=100-summary!$C$5')
+
+        df_col = pd.DataFrame({'Bot': bot_col,
+                               'Human': human_col})
+
+        df_col.set_index(index)
+        df_col.to_excel(writer, sheet_name='summary', index=True)
+
+        # Configure the first series.
+        bar_chart.add_series({
+            'name': 'Correct Prediction',
+            'categories': '=summary!$B$1:$C$1',
+            'values': '=summary!$B$5:$C$5',
+            'fill': {'color': '#29ec1e'},
+        })
+
+        # Configure the second series.
+        bar_chart.add_series({
+            'name': 'Wrong Prediction',
+            'categories': '=summary!$B$1:$C$1',
+            'values': '=summary!$B$6:$C$6',
+            'fill': {'color': '#ED213A'},
+        })
+
+        # Add a chart title and some axis labels.
+        bar_chart.set_title({'name': 'Prediction Result'})
+        bar_chart.set_y_axis({'name': 'Percentage (%)'})
+        bar_chart.set_legend({'position': 'bottom'})
+
+        # Set an Excel chart style.
+        bar_chart.set_style(11)
+
+        return bar_chart
 
 
 class ExportExcelThread(QThread):
