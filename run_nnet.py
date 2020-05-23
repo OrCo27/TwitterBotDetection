@@ -206,17 +206,17 @@ class MultiPredictor(AbstractMultiPredictor):
         return hist_val, hist_index
 
     def _build_charts_sheets(self, writer):
-        workbook = writer.book
-
         # create histogram chart
-        area_chart = self._create_histogram_chart(workbook, writer)
-        pie_chart = self._create_pie_chart(workbook, writer)
+        area_chart = self._create_histogram_chart(writer)
+        pie_chart = self._create_pie_chart(writer)
 
         # Insert the charts into the worksheet (with an offset).
         writer.sheets['histogram'].insert_chart('D1', area_chart, {'x_offset': 25, 'y_offset': 10})
         writer.sheets['pie'].insert_chart('D1', pie_chart, {'x_offset': 25, 'y_offset': 10})
 
-    def _create_histogram_chart(self, workbook, writer):
+    def _create_histogram_chart(self, writer):
+        workbook = writer.book
+
         # Create a new Chart object.
         area_chart = workbook.add_chart({'type': 'area'})
 
@@ -240,7 +240,9 @@ class MultiPredictor(AbstractMultiPredictor):
 
         return area_chart
 
-    def _create_pie_chart(self, workbook, writer):
+    def _create_pie_chart(self, writer):
+        workbook = writer.book
+
         df_pie = pd.DataFrame(
             {'Bot': [
                 f'=ROUND(SUM(results!$D$2:$D${len(self.tweets_scores_list) + 1})/{len(self.tweets_scores_list)}*100, 0)'],
@@ -340,15 +342,15 @@ class ModelTestPredictor(AbstractMultiPredictor):
         return df_result
 
     def _build_charts_sheets(self, writer):
-        workbook = writer.book
-
         # create histogram chart
-        bar_chart = self._create_bar_chart(workbook, writer)
+        bar_chart = self._create_bar_chart(writer)
 
         # Insert the charts into the worksheet (with an offset).
         writer.sheets['barchart'].insert_chart('D1', bar_chart, {'x_offset': 25, 'y_offset': 10})
 
-    def _create_bar_chart(self, workbook, writer):
+    def _create_bar_chart(self, writer):
+        workbook = writer.book
+
         # Create a new Chart object.
         bar_chart = workbook.add_chart({'type': 'column'})
 
