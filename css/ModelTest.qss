@@ -1,0 +1,126 @@
+#lbl_title {
+font: 75 20pt "Microsoft YaHei UI";
+font-weight: bold;
+qproperty-alignment: AlignCenter;
+color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #3643f7, stop:1 #3643f7);
+}
+
+#lbl_acc {
+font: 75 13pt "Microsoft YaHei UI";
+font-weight: bold;
+qproperty-alignment: AlignCenter;
+color:red;
+}
+
+#btn_homepage {
+background: transparent;
+border-radius: 19px;
+}
+
+#btn_homepage::hover {
+background: #3f72af;
+}
+
+#btn_help {
+background: transparent;
+border-radius: 19px;
+}
+
+#btn_help::hover {
+background: #3f72af;
+}
+
+#btn_bot_file, #btn_human_file {
+font: 75 11pt "MS Shell Dialog 2";
+border-radius: 0px;
+}
+
+#btn_classify,#btn_save {
+font: 75 11pt "Microsoft YaHei UI";
+font-weight: bold;
+}
+#lbl_threshold {
+font: 75 9pt "Microsoft YaHei UI";
+font-weight: bold;
+}
+#spinbox_threshold {
+font: 75 10pt "Microsoft YaHei UI";
+font-weight: bold;
+}
+QPushButton {
+font: 75 13pt "Microsoft YaHei UI";
+font-weight: bold;
+border-radius: 9px;
+border: 1px solid black;
+background-color: #f0f5f9;
+}
+QPushButton::disabled {
+background-color: #D3D3D3;
+}
+QPushButton::hover {
+background: #c9d6df;
+}
+QPushButton:pressed {
+background: #3f72af;
+}
+
+QProgressBar:horizontal {
+border: 1px solid gray;
+border-radius: 3px;
+background: white;
+padding: 0px;
+}
+QProgressBar::chunk:horizontal {
+background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
+    stop: 0 #a8ff78, stop: 1 #78ffd6);
+}
+
+QComboBox {
+font: 75 10.5pt "Microsoft YaHei UI";
+font-weight: bold;
+color: #1F1F21;
+ border: 1px solid gray;
+ border-radius: 10px;
+ min-width: 6em;
+padding-left: 8px;
+qproperty-alignment: AlignCenter;
+}
+QComboBox::hover {
+ border: 1px solid blue;
+background: #f0f5f9;
+}
+/* QComboBox gets the "on" state when the popup is open */
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+                                stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+}
+QComboBox:on {
+    borde-radius: 10px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 25px;
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 10px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 10px;
+}
+QComboBox QAbstractItemView {
+    border-radius: 10px;
+    background: white;
+    border: 1px solid gray;
+    box-shadow: transparent;
+    selection-background-color:lightblue;
+	color: #1F1F21;
+}
+
+QComboBox::down-arrow {
+image: url(:/images/arrow_down.png);
+    width: 15px;
+    height: 15px;
+padding-right: 1px;
+}
