@@ -113,47 +113,44 @@ class DatasetBuilder:
 
         for user in users_dict:
             items_count = len(users_dict[user])
-            # current user have only one tweet, pair to random human tweet
-            if items_count == 1:
-                bot_tweet = users_dict[user][0]
-                doc_tweet = random.choice(human_lines)
+            list_items = list(range(0, items_count))
 
-                bot_tweet, doc_tweet, length_valid = self._perform_pre_processing(bot_tweet, doc_tweet)
+            for i in range(items_count):
+                curr_tweet = users_dict[user][i]
+                # random choice between bot or human source
+                human_choice = bool(random.getrandbits(1))
 
-                if length_valid:
-                    final_bots.append(bot_tweet)
-                    final_docs.append(doc_tweet)
-                    final_labels.append(0)
-            else:  # user have more than one tweet, iterate them and random choose from bot or human source
-                list_items = list(range(0, items_count))
-                for i in range(items_count):
-                    curr_tweet = users_dict[user][i]
+                if human_choice:  # select from human source
+                    doc_tweet = random.choice(human_lines)
+                    label = 0
+                else:
+                    # select from bot user list
+                    label = 1
 
                     # remove current index, so it will not select again
                     if i in list_items:
                         list_items.remove(i)
 
-                    if len(list_items) == 0:  # select from human source
-                        doc_tweet = random.choice(human_lines)
-                        label = 0
-                    else:  # select from bot user list
+                    # there is no candidate to choose, select from random bot collection
+                    if len(list_items) == 0:
+                        doc_tweet = random.choice(bot_lines)
+                    else:
+                        # select candidate from own user collection
                         candidate_random_index = random.choice(list_items)
                         doc_tweet = users_dict[user][candidate_random_index]
+
                         # remove selected index that it will not select again
                         list_items.remove(candidate_random_index)
 
-                        # if pairs are not equals, select from own list
-                        if doc_tweet != curr_tweet:
-                            label = 1
-                        else:  # pairs are equals, choose from humans tweets
-                            doc_tweet = random.choice(human_lines)
-                            label = 0
+                        # pairs are equals, choose random from bot collection tweets
+                        if doc_tweet == curr_tweet:
+                            doc_tweet = random.choice(bot_lines)
 
-                    curr_tweet, doc_tweet, length_valid = self._perform_pre_processing(curr_tweet, doc_tweet)
-                    if length_valid:
-                        final_bots.append(curr_tweet)
-                        final_docs.append(doc_tweet)
-                        final_labels.append(label)
+                curr_tweet, doc_tweet, length_valid = self._perform_pre_processing(curr_tweet, doc_tweet)
+                if length_valid:
+                    final_bots.append(curr_tweet)
+                    final_docs.append(doc_tweet)
+                    final_labels.append(label)
 
         return final_bots, final_docs, final_labels
 
