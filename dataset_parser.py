@@ -36,15 +36,15 @@ class DatasetBuilder:
             final_bots, final_docs, final_labels = self._generate_dataset_users(users_dict, query_list, doc_list)
         # build final triples by random state
         else:
-            final_bots, final_docs, final_labels = self._generate_dataset_random(query_list, doc_list)
+            final_query, final_docs, final_labels = self._generate_dataset_random(query_list, doc_list)
 
         # build the vocabulary based on query-doc lists
-        self.max_text_len = self._build_vocab_docs(final_bots, final_docs)
+        self.max_text_len = self._build_vocab_docs(final_query, final_docs)
 
         # generate additional feature list only if needed
-        self._generate_additional_feats(final_bots, final_docs, additional_feats_enabled)
+        self._generate_additional_feats(final_query, final_docs, additional_feats_enabled)
 
-        self.query_list = final_bots
+        self.query_list = final_query
         self.doc_list = final_docs
         self.labels_list = np.array(final_labels).astype('int32')
 
@@ -180,22 +180,46 @@ class DatasetBuilder:
 
         # concrate two lists and shuffle them
         pairs_mixed = query_labels_pairs + doc_labels_pairs
-        # random.shuffle(pairs_mixed)
+        random.shuffle(pairs_mixed)
 
         # find for each original query an element from pairs_shuffle
         # so if it will be from the same query collection it will get label=1 (similar)
         # and else it will get label=0 (different)
-        final_bots, final_docs, final_labels = [], [], []
-        for i in range(len(query_list)):
+        final_query, final_docs, final_labels = [], [], []
+
+        for i in range(len(pairs_mixed)):
+            # get the current query and label
+            current_query_tweet, current_query_label = pairs_mixed[i]
+
             # select a random pair from the collection
-            rand_doc = random.choice(pairs_mixed)
-            doc_tweet, label = rand_doc
-            bot_tweet = query_list[i]
+            candidate_doc_tweet, candidate_doc_label = random.choice(pairs_mixed)
 
-            bot_tweet, doc_tweet, length_valid = self._perform_pre_processing(bot_tweet, doc_tweet)
+            # for human query always set label as 0
+            if current_query_label == 0:
+                final_label = 0
+            elif current_query_label == 1:
+                # for bot query set label as 1 only in case of bot document
+                if candidate_doc_label == 1:
+                    final_label = 1
+                else:
+                    final_label = 0
+
+            query_tweet, doc_tweet, length_valid = self._perform_pre_processing(current_query_tweet, candidate_doc_tweet)
             if length_valid:
-                final_bots.append(bot_tweet)
+                final_query.append(query_tweet)
                 final_docs.append(doc_tweet)
-                final_labels.append(label)
+                final_labels.append(final_label)
 
-        return final_bots, final_docs, final_labels
+        # for i in range(len(query_list)):
+        #     # select a random pair from the collection
+        #     rand_doc = random.choice(pairs_mixed)
+        #     doc_tweet, label = rand_doc
+        #     bot_tweet = query_list[i]
+        #
+        #     bot_tweet, doc_tweet, length_valid = self._perform_pre_processing(bot_tweet, doc_tweet)
+        #     if length_valid:
+        #         final_bots.append(bot_tweet)
+        #         final_docs.append(doc_tweet)
+        #         final_labels.append(label)
+
+        return final_query, final_docs, final_labels
