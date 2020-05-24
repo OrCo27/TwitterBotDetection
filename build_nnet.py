@@ -123,6 +123,7 @@ class ModelTrainer:
         callbacks to use when training model.
         - Early stopping to stop training if it's going to be overfitting and restore best weights.
         """
+
         early_stop = EarlyStopping(monitor='val_loss',
                                    min_delta=.01,
                                    patience=self.early_stopping,
@@ -130,7 +131,11 @@ class ModelTrainer:
                                    mode='auto',
                                    restore_best_weights=True)
 
-        return [early_stop, self.custom_callback]
+        callbacks_list = [early_stop]
+        if self.custom_callback is not None:
+            callbacks_list.append(self.custom_callback)
+
+        return callbacks_list
 
     def _create_model(self, vocabulary, max_text_len, addit_feat_len):
         # load embedding matrix
