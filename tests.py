@@ -5,12 +5,11 @@ from dataset_parser import DatasetConfig
 from run_nnet import SinglePredictor, MultiPredictor
 
 # training part
-
 model_train = ModelTrainer(embedding_file='data/glove.twitter.27B.200d.txt',
                            validation_split=0.33, test_split=0.15, batch_size=50, epochs=10,
                            additional_feats_enabled=True, early_stopping=5, dataset_config=DatasetConfig.RANDOM_STATE)
 model_train.train_model()
-model_train.save_model('model_random_50')
+model_train.save_model('output/model_random_50')
 
 # bot_tweet1 = 'RT @seasolshades: @StylishRentals Thank you for following. Merry Christmas https://t.co/y60wJ6iOLV'
 # bot_tweet2 = 'Think holiday shopping with the December 2 Remember Giveaway Hop! #Dec2Remember #giveaway #Christmas #holidays https://t.co/x0mleSpexN'

@@ -166,6 +166,17 @@ class DatasetBuilder:
         if self.overlap_feats.ndim > 1:
             self.addit_feat_len = self.overlap_feats.shape[1]
 
+    def _cut_lists(self, list_to_cut, cut_size):
+        list_real_size = len(list_to_cut)
+        if list_real_size >= cut_size:
+            list_triples = random.sample(list_to_cut, cut_size)
+        else:
+            list_triples = list_to_cut
+
+        query, doc, label = list(map(list, zip(*list_triples)))
+        return query, doc, label
+
+
     # generate docs pairs from the whole bots source
     def _generate_dataset_random(self, query_list, doc_list):
         self.logger.write_log(f'Generating final dataset with appropriate candidates...')
@@ -186,6 +197,7 @@ class DatasetBuilder:
         # so if it will be from the same query collection it will get label=1 (similar)
         # and else it will get label=0 (different)
         final_query, final_docs, final_labels = [], [], []
+        temp_human_x, temp_bot_human = [], []
 
         for i in range(len(pairs_mixed)):
             # get the current query and label
@@ -194,21 +206,36 @@ class DatasetBuilder:
             # select a random pair from the collection
             candidate_doc_tweet, candidate_doc_label = random.choice(pairs_mixed)
 
-            # for human query always set label as 0
-            if current_query_label == 0:
-                final_label = 0
-            elif current_query_label == 1:
-                # for bot query set label as 1 only in case of bot document
-                if candidate_doc_label == 1:
-                    final_label = 1
-                else:
-                    final_label = 0
-
             query_tweet, doc_tweet, length_valid = self._perform_pre_processing(current_query_tweet, candidate_doc_tweet)
+
             if length_valid:
-                final_query.append(query_tweet)
-                final_docs.append(doc_tweet)
-                final_labels.append(final_label)
+                # for human query always set label as 0
+                if current_query_label == 0:
+                    temp_human_x.append([query_tweet, doc_tweet, 0])
+                elif current_query_label == 1:
+                    # for bot query set label as 1 only in case of bot document
+                    if candidate_doc_label == 1:
+                        final_query.append(query_tweet)
+                        final_docs.append(doc_tweet)
+                        final_labels.append(1)
+                    else:
+                        temp_bot_human.append([query_tweet, doc_tweet, 0])
+
+        bot_count = len(final_query)
+        half_bot_count = int(bot_count/2)
+
+        query1, doc1, label1 = self._cut_lists(temp_human_x, half_bot_count)
+        for i in range(len(query1)):
+            final_query.append(query1[i])
+            final_docs.append(doc1[i])
+            final_labels.append(label1[i])
+
+        query2, doc2, label2 = self._cut_lists(temp_bot_human, half_bot_count)
+        for i in range(len(query2)):
+            final_query.append(query2[i])
+            final_docs.append(doc2[i])
+            final_labels.append(label2[i])
+
 
         # for i in range(len(query_list)):
         #     # select a random pair from the collection
