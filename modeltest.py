@@ -227,7 +227,7 @@ class ModelTestController(QMainWindow):
         # get predicting parameters
         model_name = str(self.ui.combobox_model.currentText())
         bot_file = self.ui.textbox_bot_file.text()
-        human_file = self.ui.textbox_bot_file.text()
+        human_file = self.ui.textbox_human_file.text()
         bot_tweets = self.ui.spinbox_bot_tweets.value()
         human_tweets = self.ui.spinbox_human_tweets.value()
         total_tweets = bot_tweets + human_tweets
