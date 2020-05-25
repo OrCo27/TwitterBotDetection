@@ -33,7 +33,7 @@ class DatasetBuilder:
         # build final triples by users resolution
         if self.config_id == DatasetConfig.USER_STATE[0]:
             users_dict = self._build_users_dict(query_list)
-            final_bots, final_docs, final_labels = self._generate_dataset_users(users_dict, query_list, doc_list)
+            final_query, final_docs, final_labels = self._generate_dataset_users(users_dict, query_list, doc_list)
         # build final triples by random state
         else:
             final_query, final_docs, final_labels = self._generate_dataset_random(query_list, doc_list)
