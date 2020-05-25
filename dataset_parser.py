@@ -166,87 +166,57 @@ class DatasetBuilder:
         if self.overlap_feats.ndim > 1:
             self.addit_feat_len = self.overlap_feats.shape[1]
 
-    def _cut_lists(self, list_to_cut, cut_size):
-        list_real_size = len(list_to_cut)
-        if list_real_size >= cut_size:
-            list_triples = random.sample(list_to_cut, cut_size)
-        else:
-            list_triples = list_to_cut
-
-        query, doc, label = list(map(list, zip(*list_triples)))
-        return query, doc, label
-
-
     # generate docs pairs from the whole bots source
     def _generate_dataset_random(self, query_list, doc_list):
         self.logger.write_log(f'Generating final dataset with appropriate candidates...')
 
-        # create temporary labels for each list
-        query_labels = [1] * len(query_list)
-        doc_labels = [0] * len(doc_list)
+        # remove duplicates on query list
+        query_list = list(set(query_list))
 
-        # create pairs of (text, label)
-        query_labels_pairs = list(zip(query_list, query_labels))
-        doc_labels_pairs = list(zip(doc_list, doc_labels))
-
-        # concrate two lists and shuffle them
-        pairs_mixed = query_labels_pairs + doc_labels_pairs
-        random.shuffle(pairs_mixed)
+        random.shuffle(query_list)
+        random.shuffle(doc_list)
 
         # find for each original query an element from pairs_shuffle
         # so if it will be from the same query collection it will get label=1 (similar)
         # and else it will get label=0 (different)
         final_query, final_docs, final_labels = [], [], []
-        temp_human_x, temp_bot_human = [], []
+        group_size = 15
+        query_indexes = list(range(len(query_list)))
+        doc_indexes = list(range(len(doc_list)))
+        max_data = 600000
 
-        for i in range(len(pairs_mixed)):
-            # get the current query and label
-            current_query_tweet, current_query_label = pairs_mixed[i]
+        i = 0
+        while (len(query_indexes) > 0) and (len(doc_indexes) > 0) and (len(final_query) < max_data):
+            # remove current index that it will not choose in group
+            if i in query_indexes:
+                query_indexes.remove(i)
 
-            # select a random pair from the collection
-            candidate_doc_tweet, candidate_doc_label = random.choice(pairs_mixed)
+            curr_bot_tweet = query_list[i]
+            bots_to_choose = int(group_size * 0.4)
+            human_to_choose = group_size - bots_to_choose
 
-            query_tweet, doc_tweet, length_valid = self._perform_pre_processing(current_query_tweet, candidate_doc_tweet)
+            for j in range(bots_to_choose):
+                candidate_bot_index = random.choice(query_indexes)
+                candidate_bot_tweet = query_list[candidate_bot_index]
+                query_indexes.remove(candidate_bot_index)
 
-            if length_valid:
-                # for human query always set label as 0
-                if current_query_label == 0:
-                    temp_human_x.append([query_tweet, doc_tweet, 0])
-                elif current_query_label == 1:
-                    # for bot query set label as 1 only in case of bot document
-                    if candidate_doc_label == 1:
-                        final_query.append(query_tweet)
-                        final_docs.append(doc_tweet)
-                        final_labels.append(1)
-                    else:
-                        temp_bot_human.append([query_tweet, doc_tweet, 0])
+                bot_tweet, doc_tweet, length_valid = self._perform_pre_processing(curr_bot_tweet, candidate_bot_tweet)
+                if length_valid:
+                    final_query.append(bot_tweet)
+                    final_docs.append(doc_tweet)
+                    final_labels.append(1)
 
-        bot_count = len(final_query)
-        half_bot_count = int(bot_count/2)
+            for j in range(human_to_choose):
+                candidate_human_index = random.choice(doc_indexes)
+                candidate_human_tweet = doc_list[candidate_human_index]
+                doc_indexes.remove(candidate_human_index)
 
-        query1, doc1, label1 = self._cut_lists(temp_human_x, half_bot_count)
-        for i in range(len(query1)):
-            final_query.append(query1[i])
-            final_docs.append(doc1[i])
-            final_labels.append(label1[i])
+                bot_tweet, doc_tweet, length_valid = self._perform_pre_processing(curr_bot_tweet, candidate_human_tweet)
+                if length_valid:
+                    final_query.append(bot_tweet)
+                    final_docs.append(doc_tweet)
+                    final_labels.append(0)
 
-        query2, doc2, label2 = self._cut_lists(temp_bot_human, half_bot_count)
-        for i in range(len(query2)):
-            final_query.append(query2[i])
-            final_docs.append(doc2[i])
-            final_labels.append(label2[i])
-
-
-        # for i in range(len(query_list)):
-        #     # select a random pair from the collection
-        #     rand_doc = random.choice(pairs_mixed)
-        #     doc_tweet, label = rand_doc
-        #     bot_tweet = query_list[i]
-        #
-        #     bot_tweet, doc_tweet, length_valid = self._perform_pre_processing(bot_tweet, doc_tweet)
-        #     if length_valid:
-        #         final_bots.append(bot_tweet)
-        #         final_docs.append(doc_tweet)
-        #         final_labels.append(label)
+            i += 1
 
         return final_query, final_docs, final_labels
