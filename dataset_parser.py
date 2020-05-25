@@ -188,7 +188,7 @@ class DatasetBuilder:
         # so if it will be from the same query collection it will get label=1 (similar)
         # and else it will get label=0 (different)
         final_query, final_docs, final_labels = [], [], []
-        group_size = 15
+        group_size = 8
 
         for i in range(0, len(query_labels_pairs), group_size):
             curr_bot_tweet, _ = query_labels_pairs[i]
@@ -196,7 +196,7 @@ class DatasetBuilder:
             bot_batch = query_labels_pairs[i+1:i+group_size]
             human_batch = doc_labels_pairs[i:i+group_size]
 
-            bots_to_choose = random.randint(2,7)
+            bots_to_choose = 4
             human_to_choose = group_size - bots_to_choose
 
             if bots_to_choose <= len(bot_batch):
