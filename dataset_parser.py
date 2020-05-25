@@ -204,7 +204,11 @@ class DatasetBuilder:
             else:
                 bots_chosen_tweets = bot_batch
 
-            human_chosen_tweets = random.sample(human_batch, human_to_choose)
+            if human_to_choose <= len(human_batch):
+                human_chosen_tweets = random.sample(human_batch, human_to_choose)
+            else:
+                human_chosen_tweets = human_batch
+
             interval_tweets = bots_chosen_tweets + human_chosen_tweets
 
             # for each bot, generate samples of random choices
