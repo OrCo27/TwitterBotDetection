@@ -170,9 +170,6 @@ class DatasetBuilder:
     def _generate_dataset_random(self, query_list, doc_list):
         self.logger.write_log(f'Generating final dataset with appropriate candidates...')
 
-        # remove duplicates on query list
-        query_list = list(set(query_list))
-
         # create temporary labels for each list
         query_labels = [1] * len(query_list)
         doc_labels = [0] * len(doc_list)
@@ -181,43 +178,24 @@ class DatasetBuilder:
         query_labels_pairs = list(zip(query_list, query_labels))
         doc_labels_pairs = list(zip(doc_list, doc_labels))
 
-        random.shuffle(query_labels_pairs)
-        random.shuffle(doc_labels_pairs)
+        # concrate two lists and shuffle them
+        pairs_mixed = query_labels_pairs + doc_labels_pairs
+        # random.shuffle(pairs_mixed)
 
         # find for each original query an element from pairs_shuffle
         # so if it will be from the same query collection it will get label=1 (similar)
         # and else it will get label=0 (different)
-        final_query, final_docs, final_labels = [], [], []
-        group_size = 8
+        final_bots, final_docs, final_labels = [], [], []
+        for i in range(len(query_list)):
+            # select a random pair from the collection
+            rand_doc = random.choice(pairs_mixed)
+            doc_tweet, label = rand_doc
+            bot_tweet = query_list[i]
 
-        for i in range(0, len(query_labels_pairs), group_size):
-            curr_bot_tweet, _ = query_labels_pairs[i]
+            bot_tweet, doc_tweet, length_valid = self._perform_pre_processing(bot_tweet, doc_tweet)
+            if length_valid:
+                final_bots.append(bot_tweet)
+                final_docs.append(doc_tweet)
+                final_labels.append(label)
 
-            bot_batch = query_labels_pairs[i+1:i+group_size]
-            human_batch = doc_labels_pairs[i:i+group_size]
-
-            bots_to_choose = 4
-            human_to_choose = group_size - bots_to_choose
-
-            if bots_to_choose <= len(bot_batch):
-                bots_chosen_tweets = random.sample(bot_batch, bots_to_choose)
-            else:
-                bots_chosen_tweets = bot_batch
-
-            if human_to_choose <= len(human_batch):
-                human_chosen_tweets = random.sample(human_batch, human_to_choose)
-            else:
-                human_chosen_tweets = human_batch
-
-            interval_tweets = bots_chosen_tweets + human_chosen_tweets
-
-            # for each bot, generate samples of random choices
-            for i in range(len(interval_tweets)):
-                candidate_doc_tweet, candidate_label = interval_tweets[i]
-                bot_tweet, doc_tweet, length_valid = self._perform_pre_processing(curr_bot_tweet, candidate_doc_tweet)
-                if length_valid:
-                    final_query.append(bot_tweet)
-                    final_docs.append(doc_tweet)
-                    final_labels.append(candidate_label)
-
-        return final_query, final_docs, final_labels
+        return final_bots, final_docs, final_labels
