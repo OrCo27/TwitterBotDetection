@@ -88,6 +88,10 @@ class ModelCommon:
             raise Exception(f'The {file_type} File: \'{file_name}\' is Empty!\nPlease Select Another One.')
 
     @staticmethod
+    def open_help_file():
+        os.startfile("doc\\Help.pdf")
+
+    @staticmethod
     def show_msg(text, title, msg_type=QMessageBox.Critical):
         frm = QMessageBox()
         frm.setIcon(msg_type)

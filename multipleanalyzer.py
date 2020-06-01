@@ -44,6 +44,7 @@ class MultipleAnalyzerController(QMainWindow):
         self.ui.btn_classify.clicked.connect(self.classify_tweets)
         self.ui.textbox_tweets_file.textChanged.connect(self.check_validation)
         self.ui.combobox_model.currentIndexChanged.connect(self.check_validation)
+        self.ui.btn_help.clicked.connect(Utils.open_help_file)
 
         # connect signals
         self.update_tweet_progress.connect(self.ui.progressbar_tweets.setValue)

@@ -42,7 +42,7 @@ class ModelTrainer:
 
     def train_model(self):
         # load exists dataset or create a new one if not exists
-        #self._load_datset()
+        #self._load_dataset()
 
         # build dataset for training
         self.dataset.perform_build(self.bots_file, self.human_file, self.additional_feats_enabled)
@@ -147,7 +147,7 @@ class ModelTrainer:
 
         return cnn_model
 
-    def _load_datset(self):
+    def _load_dataset(self):
         model_file = f'data/dataset_{self.dataset.config_name}.pickle'
         self.logger.write_log(f'Try to load exists dataset with config: {self.dataset.config_name}')
 

@@ -32,6 +32,7 @@ class SingleAnalyzerController(QMainWindow):
         self.ui.textbox_tweet.textChanged.connect(self.check_validation)
         self.ui.combobox_model.currentIndexChanged.connect(self.check_validation)
         self.ui.btn_start.clicked.connect(self.start_predict)
+        self.ui.btn_help.clicked.connect(Utils.open_help_file)
 
         # connect signals
         self.update_progress.connect(self.ui.progressbar_batch.setValue)

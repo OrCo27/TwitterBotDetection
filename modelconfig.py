@@ -83,6 +83,7 @@ class ModelConfigController(QMainWindow):
         self.ui.btn_start.clicked.connect(self.start_train)
         self.ui.btn_stop.clicked.connect(self.stop_train)
         self.ui.btn_save.clicked.connect(self.save_model)
+        self.ui.btn_help.clicked.connect(Utils.open_help_file)
 
         # connect qt signals
         self.draw_batch_graph.connect(self.plot_batches)
@@ -93,7 +94,6 @@ class ModelConfigController(QMainWindow):
         self.update_batch_progress.connect(self.ui.progressbar_batch.setValue)
         self.write_log_text.connect(self.write_log)
         self.need_stop.connect(self.get_status_stopped)
-        # TODO: add help
 
     def _load_stylesheet(self):
         file = QFile('./css/ModelConfig.qss')
