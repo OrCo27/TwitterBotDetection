@@ -161,10 +161,16 @@ class ModelTrainer:
             with open(model_file, 'wb') as f:
                 pickle.dump(self.dataset, f)
 
+    # saving the complete model including it's weights
     def save_model(self, model_name):
-        # saving the complete model including it's weights
-        model_path = f'{model_name}.h5'
-        pickle_path = f'{model_name}.pickle'
+        # if there is any extension in model name, remove it
+        if '.' in model_name:
+            name_without_extension = model_name[:model_name.find('.')]
+        else:
+            name_without_extension = model_name
+
+        model_path = f'{name_without_extension}.h5'
+        pickle_path = f'{name_without_extension}.pickle'
 
         self.model.save(model_path)
 
