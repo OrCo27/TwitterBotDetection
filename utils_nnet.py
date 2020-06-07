@@ -78,7 +78,7 @@ class ModelCommon:
     @staticmethod
     def file_validation(file_path, file_type):
         if (file_path is None) or (not file_path):
-            raise Exception(f'{file_type} File Path is Empty!\nPlease Select a File For Starting a New Training.')
+            raise Exception(f'{file_type} File Path is Empty!\nPlease Select an Exists File!')
 
         file_exists = os.path.isfile(file_path)
         file_name = os.path.basename(file_path)
