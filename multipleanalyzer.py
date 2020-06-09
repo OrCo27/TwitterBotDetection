@@ -73,6 +73,7 @@ class MultipleAnalyzerController(QMainWindow):
     def export_finished(self):
         if self.export_thread.is_success():
             Utils.show_msg(text="Exporting Complete!", title="Successful", msg_type=QMessageBox.Information)
+            os.startfile(self.export_thread.excel_path)
         else:
             Utils.show_msg(text=self.export_thread.error, title="Error", msg_type=QMessageBox.Critical)
 
