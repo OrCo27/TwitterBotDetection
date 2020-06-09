@@ -68,11 +68,6 @@ class ModelConfigController(QMainWindow):
         # set log method for writing to log textbox
         self.log = Log(self.write_log_text.emit)
 
-        # initialize default paths
-        self.ui.textbox_embed.setText('C:/Users/אור כהן/PycharmProjects/TwitterBotDetection/data/glove.twitter.27B.200d.txt')
-        self.ui.textbox_bot.setText('C:/Users/אור כהן/PycharmProjects/TwitterBotDetection/data/bots_tweets.txt')
-        self.ui.textbox_human.setText('C:/Users/אור כהן/PycharmProjects/TwitterBotDetection/data/human_tweets.txt')
-
         # connect listeners to ui widgets
         self.ui.btn_homepage.clicked.connect(self.back_homepage)
         self.ui.slider_train.valueChanged.connect(lambda: self.slider_changed(self.ui.slider_train, self.ui.lbl_train))
@@ -147,8 +142,6 @@ class ModelConfigController(QMainWindow):
     def reset_graphs(self):
         self.clear_epoch_graphs()
         self.clear_batch_graphs()
-        # self.plot_batches([0], [0], [0])
-        # self.plot_epochs([0], [0], [0], [0], [0])
 
     def update_range(self):
         self.max_batch_slide += 1
