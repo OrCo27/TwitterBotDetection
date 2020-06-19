@@ -28,7 +28,6 @@ class MainWindowController(QMainWindow):
         self.ui.btn_multi.clicked.connect(self.open_multiple_analyzer_gui)
         self.ui.btn_test.clicked.connect(self.open_model_test_gui)
         self.ui.btn_help.clicked.connect(Utils.open_help_file)
-        #TODO: update the final date on label
 
     def _load_stylesheet(self):
         file = QFile('./css/MainWindow.qss')

@@ -99,7 +99,7 @@ radius: 1.35, stop: 0 #a9a9a9, stop: 1 #a9a9a9);
       </font>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Created By Or Cohen &amp;amp; Eliran Menashe&lt;br/&gt;Supervisor: Dr. Renata Avros&lt;br/&gt;Date: 01/05/2020&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Created By Or Cohen &amp;amp; Eliran Menashe&lt;br/&gt;Supervisor: Dr. Renata Avros&lt;br/&gt;Date: 25/06/2020&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
@@ -329,7 +329,7 @@ radius: 1.35, stop: 0 #a9a9a9, stop: 1 #a9a9a9);
     </layout>
    </item>
    <item row="0" column="0">
-    <widget class="QFrame" name="">
+    <widget class="QFrame" name="frame">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>

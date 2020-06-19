@@ -201,7 +201,7 @@ class Ui_MainMenu(object):
     def retranslateUi(self, MainMenu):
         _translate = QtCore.QCoreApplication.translate
         MainMenu.setWindowTitle(_translate("MainMenu", "Main Menu"))
-        self.lbl_created.setText(_translate("MainMenu", "<html><head/><body><p align=\"center\">Created By Or Cohen &amp; Eliran Menashe<br/>Supervisor: Dr. Renata Avros<br/>Date: 01/05/2020</p></body></html>"))
+        self.lbl_created.setText(_translate("MainMenu", "<html><head/><body><p align=\"center\">Created By Or Cohen &amp; Eliran Menashe<br/>Supervisor: Dr. Renata Avros<br/>Date: 25/06/2020</p></body></html>"))
         self.btn_multi.setText(_translate("MainMenu", "Analyze Multiple Tweets"))
         self.btn_config.setText(_translate("MainMenu", "Configuration"))
         self.btn_help.setText(_translate("MainMenu", "Help"))
