@@ -7,7 +7,7 @@ In **doc** folder you can find the following files:
 2.  environment.yml - the environment that used for running this project.
 
 ## Algorithm
-![image](https://user-images.githubusercontent.com/34770124/85946197-4b958f80-b94b-11ea-9235-28184ead78c3.png)
+![image](https://user-images.githubusercontent.com/34770124/85947286-6586a080-b952-11ea-9898-8592ffadd285.png)
 
 The user inserts a tweet to find whether the tweet was written by a person or by a bot. Then, for this tweet, we perform the preprocessing process and we create a Sentence Matrix that contains its words embedding representation. As part of the training model process, we create a list of bot tweets in their Sentence Matrix representation, and we use them for binding the tweet of the user for each of them. This process allows us to create pairs of bot-user tweets, so we can insert the pairs into the architecture for matching text pairs for checking if this tweet is similar for every bot tweet. 
 As the output of the network, we will get the similarity scores list for each of the pairs we created, and then we convert the scores to classes (when zero means the two tweets have a different sentence structure, one means the opposite). 
