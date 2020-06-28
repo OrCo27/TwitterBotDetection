@@ -20,4 +20,6 @@ In order to determine if the tweet written by a bot or human, we calculate the p
 
 - If you want to use with already trained models, please download all files in the following link and copy them to **output** directory:  [Output Files](https://drive.google.com/drive/folders/1-vkuU0QhHxYcrzum4e7dy5QcRj4ZswqV?usp=sharing "Output Files")
 
+- If you want to run the project directly without any IDE, you can download the executable folder in the following link: [Executable Folder](https://drive.google.com/drive/folders/1-yBtgDULyCBwzrHTW6ojf1xpCNDrxXvc?usp=sharing "Executable Folder")
+
 - Video of the program: [Demonstration - Video](https://drive.google.com/file/d/1RCppiogy7_ngH8NTGwe_skc7z8yABdYB/view?usp=sharing "Demonstration - Video")
