@@ -1,5 +1,5 @@
 # Twitter Bot Detection
-This code is remplementation of [Learning to Rank Short Text Pairs with Convolutional Deep Neural Networks](http://disi.unitn.eu/moschitti/since2013/2015_SIGIR_Severyn_LearningRankShort.pdf "Learning to Rank Short Text Pairs with Convolutional Deep Neural Network") in Keras.
+This code is an implementation of [Learning to Rank Short Text Pairs with Convolutional Deep Neural Networks](http://disi.unitn.eu/moschitti/since2013/2015_SIGIR_Severyn_LearningRankShort.pdf "Learning to Rank Short Text Pairs with Convolutional Deep Neural Network") in Keras, in order to classify bot and human tweets.
 
 ## Notes
 In **doc** folder you can find the following files:
