@@ -1,16 +1,20 @@
 # Twitter Bot Detection
 This code is remplementation of [Learning to Rank Short Text Pairs with Convolutional Deep Neural Networks](http://disi.unitn.eu/moschitti/since2013/2015_SIGIR_Severyn_LearningRankShort.pdf "Learning to Rank Short Text Pairs with Convolutional Deep Neural Network") in Keras.
 
-## Documents
+## Notes
 In **doc** folder you can find the following files:
-1. Help.pdf - the help system for each component in each window.
-2.  environment.yml - the environment that used for running this project.
+1. **Help.pdf** - the help system for each component in each window.
+2. **Learning to Rank Short Text Pairs with CNN.pdf **- the book for final project.
+
+In **data** folder you can use the **environment.yml** file in order to configure your environment to the versions as mine.
 
 ## Algorithm
 ![image](https://user-images.githubusercontent.com/34770124/85947286-6586a080-b952-11ea-9898-8592ffadd285.png)
 
 The user inserts a tweet to find whether the tweet was written by a person or by a bot. Then, for this tweet, we perform the preprocessing process and we create a Sentence Matrix that contains its words embedding representation. As part of the training model process, we create a list of bot tweets in their Sentence Matrix representation, and we use them for binding the tweet of the user for each of them. This process allows us to create pairs of bot-user tweets, so we can insert the pairs into the architecture for matching text pairs for checking if this tweet is similar for every bot tweet. 
+
 As the output of the network, we will get the similarity scores list for each of the pairs we created, and then we convert the scores to classes (when zero means the two tweets have a different sentence structure, one means the opposite). 
+
 In order to determine if the tweet written by a bot or human, we calculate the percentage of tweets that are similar, by calculating the ratio of the number of pairs who received the classification 1 to the number of total pairs. If this ratio passes the threshold selected by the user, the model will identify the tweet as bot tweet.
 
 ## How to run the project
