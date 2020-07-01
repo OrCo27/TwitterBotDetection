@@ -22,7 +22,7 @@ In order to determine if the tweet written by a bot or human, we calculate the p
 ## How to run the project
 - In order to set your environment like mine,  please use the yml file that exists on **data** folder, or use the following link of yml file for creating the environment: [environment.yml](https://drive.google.com/file/d/1qTrAOfsqjCyXvklOWgyU3OCGipCiQaxl/view?usp=sharing "environment.yml")
 
-- In the first using, the folder **data** is empty, which contains all datasets files and pre-trained word2vec vectors. Please download all these files in the following link: [Data Files](https://drive.google.com/drive/folders/1yE9sHTextcNDBoUNW1PbzUa6pPTukWY3?usp=sharing "Data Files")
+- In the first using, the folder **data** is empty except the yml file. This folder may contain all datasets files and pre-trained word2vec vectors. Please download all these files in the following link: [Data Files](https://drive.google.com/drive/folders/1yE9sHTextcNDBoUNW1PbzUa6pPTukWY3?usp=sharing "Data Files")
 
 - If you want to use with already trained models, please download all files in the following link and copy them to **output** directory:  [Output Files](https://drive.google.com/drive/folders/1-vkuU0QhHxYcrzum4e7dy5QcRj4ZswqV?usp=sharing "Output Files")
 
