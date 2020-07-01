@@ -4,7 +4,7 @@ This code is remplementation of [Learning to Rank Short Text Pairs with Convolut
 ## Notes
 In **doc** folder you can find the following files:
 1. **Help.pdf** - the help system for each component in each window.
-2. **Learning to Rank Short Text Pairs with CNN.pdf **- the book for final project.
+2. **Learning to Rank Short Text Pairs with CNN.pdf**- the book for final project.
 
 In **data** folder you can use the **environment.yml** file in order to configure your environment to the versions as mine.
 
