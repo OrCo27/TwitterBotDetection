@@ -6,3 +6,4 @@
 # files to keep
 !.gitkeep
 !.gitignore
+!/data/environment.yml
