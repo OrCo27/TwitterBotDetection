@@ -20,7 +20,20 @@ As the output of the network, we will get the similarity scores list for each of
 In order to determine if the tweet written by a bot or human, we calculate the percentage of tweets that are similar, by calculating the ratio of the number of pairs who received the classification 1 to the number of total pairs. If this ratio passes the threshold selected by the user, the model will identify the tweet as bot tweet.
 
 ## How to run the project
-- In order to set your environment like mine,  please use the yml file that exists on **data** folder, or use the following link of yml file for creating the environment: [environment.yml](https://drive.google.com/file/d/1qTrAOfsqjCyXvklOWgyU3OCGipCiQaxl/view?usp=sharing "environment.yml")
+- In order to set your environment like mine, please use the **[environment.yml](data/environment.yml)** file that exists on **data** folder.
+
+  #### Creating an environment from an environment.yml file
+  Use the terminal or an Anaconda Prompt for the following steps:
+
+  1. Create the environment from the environment.yml file: 
+
+ 		`conda env create -f environment.yml`
+
+     The first line of the `yml` file sets the new environment's name.
+
+  2. Activate the new environment: `conda activate myenv`
+
+  3. Verify that the new environment was installed correctly:  `conda env list`
 
 - In the first using, the folder **data** is empty except the yml file. This folder may contain all datasets files and pre-trained word2vec vectors. Please download all these files in the following link: [Data Files](https://drive.google.com/drive/folders/1yE9sHTextcNDBoUNW1PbzUa6pPTukWY3?usp=sharing "Data Files")
 
