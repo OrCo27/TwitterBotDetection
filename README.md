@@ -2,13 +2,13 @@
 This code is an implementation of [Learning to Rank Short Text Pairs with Convolutional Deep Neural Networks](http://disi.unitn.eu/moschitti/since2013/2015_SIGIR_Severyn_LearningRankShort.pdf "Learning to Rank Short Text Pairs with Convolutional Deep Neural Network") in Keras, in order to classify bot and human tweets.
 
 ## Notes
-In **doc** folder you can find the following files:
-1. **[Help.pdf](doc/Help.pdf)** - the help system for each component in each window.
-2. **[Learning to Rank Short Text Pairs with CNN.pdf](doc/Learning%20to%20Rank%20Short%20Text%20Pairs%20with%20CNN.pdf)** - the book for final project.
+- In **doc** folder you can find the following files:
+  1. **[Help.pdf](doc/Help.pdf)** - the help system for each component in each window.
+  2. **[Learning to Rank Short Text Pairs with CNN.pdf](doc/Learning%20to%20Rank%20Short%20Text%20Pairs%20with%20CNN.pdf)** - the book for final project.
 
-In **data** folder you can use the **[environment.yml](data/environment.yml)** file in order to configure your environment to the versions as mine.
+- In **data** folder you can use the **[environment.yml](data/environment.yml)** file in order to configure your environment to the versions as mine.
 
-In **screenshots** folder you can see the screenshots for all windows that used on our project.
+- In **screenshots** folder you can see the screenshots for all windows that used on our project.
 
 ## Algorithm
 ![image](https://user-images.githubusercontent.com/34770124/85947286-6586a080-b952-11ea-9898-8592ffadd285.png)
