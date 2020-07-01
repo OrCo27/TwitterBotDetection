@@ -8,6 +8,8 @@ In **doc** folder you can find the following files:
 
 In **data** folder you can use the **environment.yml** file in order to configure your environment to the versions as mine.
 
+In **screenshots** folder you can see the screenshots for all windows that used on our project.
+
 ## Algorithm
 ![image](https://user-images.githubusercontent.com/34770124/85947286-6586a080-b952-11ea-9898-8592ffadd285.png)
 
